@@ -10,7 +10,7 @@ PM_FILE = Path(__file__).resolve().parent.parent / "data" / "raw" / "pmproofs.tx
 
 class FormulaTests(unittest.TestCase):
     def test_identity_proof(self):
-        # The README's worked example: DD211 proves p -> p in five steps.
+        # The worked example in docs/NOTES.md: DD211 proves p -> p in five steps.
         self.assertEqual(F.eval_dproof("DD211", AX), (0, 0))
 
     def test_syllogism_proof(self):

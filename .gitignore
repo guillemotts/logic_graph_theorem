@@ -14,7 +14,7 @@ venv/
 node_modules/
 
 # --- Data: downloaded or regenerable (large) ---
-# Downloads: set.mm and pmproofs.txt (re-fetch with the commands in README.md)
+# Downloads: set.mm and pmproofs.txt (re-fetch with the commands in docs/NOTES.md)
 data/raw/
 # Built from set.mm by logicgraph.parse_setmm / scores / algorithms
 data/processed/

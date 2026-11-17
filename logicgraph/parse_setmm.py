@@ -7,7 +7,7 @@ Outputs two CSV tables:
 
 Only assertions whose typecode is `|-` become nodes. Syntax statements
 (`wff`, `class`, `setvar`, ...) and a proof's own hypotheses are filtered out,
-as the README's "parsing shortcut" describes. Edges come straight from the
+as the "parsing shortcut" in docs/NOTES.md describes. Edges come straight from the
 label list of each proof, so they record *which* lemmas a proof uses, not
 *how many times*.
 
