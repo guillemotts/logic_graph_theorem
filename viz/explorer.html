@@ -1,0 +1,1253 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Logic Graph Explorer</title>
+<style>
+:root {
+  --bg: #f7f6f3; --panel: #ffffff; --ink: #1d1d1f; --muted: #6b6b70; --line: #e3e1dc;
+  --accent: #3b5bdb; --accent-soft: #e7ecff; --edge: #b8b6b0;
+  --k-axiom: #c2410c; --k-axiom-bg: #fff1e6; --k-def: #0f766e; --k-def-bg: #e6f6f3;
+  --k-thm: #1d1d1f; --k-thm-bg: #ffffff; --heat: 59, 91, 219;
+  --series-1: #2a78d6; --series-2: #eb6834; --series-3: #1baf7a; --grid: #ecebe7;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #141416; --panel: #1c1c1f; --ink: #ececef; --muted: #9a9aa2; --line: #2e2e33;
+    --accent: #8ea2ff; --accent-soft: #252b45; --edge: #4a4a52;
+    --k-axiom: #fb923c; --k-axiom-bg: #3a2414; --k-def: #2dd4bf; --k-def-bg: #10302c;
+    --k-thm: #ececef; --k-thm-bg: #232327; --heat: 142, 162, 255;
+    --series-1: #3987e5; --series-2: #d95926; --series-3: #199e70; --grid: #2a2a2e;
+  }
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body { background: var(--bg); color: var(--ink); font: 14px/1.45 var(--sans); display: flex; flex-direction: column; }
+header { display: flex; align-items: center; gap: 16px; padding: 10px 16px; border-bottom: 1px solid var(--line); background: var(--panel); flex-wrap: wrap; }
+header h1 { font-size: 15px; margin: 0; font-weight: 650; letter-spacing: -0.01em; }
+.tabs { display: flex; gap: 2px; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 2px; }
+.tabs button { border: 0; background: transparent; color: var(--muted); padding: 5px 12px; border-radius: 6px; font: inherit; cursor: pointer; }
+.tabs button.on { background: var(--panel); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+.search { position: relative; flex: 1; max-width: 420px; min-width: 200px; }
+.search input { width: 100%; padding: 7px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--ink); font: 13px var(--mono); }
+.search input:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+.results { position: absolute; top: 100%; left: 0; right: 0; margin-top: 4px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,.12); max-height: 420px; overflow: auto; z-index: 20; display: none; }
+.results div { padding: 6px 10px; cursor: pointer; display: flex; gap: 10px; align-items: baseline; }
+.results div.sel, .results div:hover { background: var(--accent-soft); }
+.results b { font: 600 12.5px var(--mono); white-space: nowrap; }
+.results span { color: var(--muted); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.meta { color: var(--muted); font-size: 12px; margin-left: auto; }
+main { flex: 1; min-height: 0; display: flex; }
+.view { flex: 1; min-height: 0; display: none; }
+.view.on { display: flex; }
+
+/* Explorer */
+#explorer { gap: 0; }
+.canvas-wrap { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.toolbar { display: flex; gap: 14px; align-items: center; padding: 8px 16px; border-bottom: 1px solid var(--line); flex-wrap: wrap; font-size: 12.5px; color: var(--muted); }
+.toolbar label { display: inline-flex; gap: 5px; align-items: center; cursor: pointer; }
+.toolbar select { font: inherit; color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 2px 4px; }
+.legend { display: inline-flex; gap: 10px; margin-left: auto; }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; border: 1.5px solid; }
+.scroll { flex: 1; overflow: auto; }
+svg text { font-family: var(--mono); }
+.node { cursor: pointer; }
+.node rect { stroke-width: 1.2; }
+.node.focus rect { stroke: var(--accent); stroke-width: 2.2; }
+.node:hover rect { stroke: var(--accent); }
+.node.dim { opacity: .35; }
+.edge { fill: none; stroke: var(--edge); stroke-width: 1; opacity: .7; }
+.edge.hot { stroke: var(--accent); opacity: 1; stroke-width: 1.6; }
+.colhead { fill: var(--muted); font: 600 11px var(--sans); letter-spacing: .04em; text-transform: uppercase; }
+.more rect { fill: var(--bg); stroke: var(--line); stroke-dasharray: 3 3; }
+.more text { fill: var(--muted); font: 12px var(--sans); }
+
+aside { width: 400px; flex: none; border-left: 1px solid var(--line); background: var(--panel); overflow: auto; padding: 18px 20px 28px; }
+aside h2 { font: 650 19px var(--mono); margin: 0 0 6px; word-break: break-all; }
+.badges { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+.badge { font-size: 11px; padding: 2px 7px; border-radius: 99px; border: 1px solid var(--line); color: var(--muted); }
+.badge.k0 { color: var(--k-axiom); border-color: var(--k-axiom); }
+.badge.k1 { color: var(--k-def); border-color: var(--k-def); }
+.badge.warn { color: #b45309; border-color: #f59e0b; }
+.stmt { font: 15px/1.6 "STIX Two Math", "Cambria Math", var(--sans); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; word-wrap: break-word; }
+details.raw { margin-top: 6px; font-size: 12px; color: var(--muted); }
+details.raw code { font: 11.5px var(--mono); word-break: break-all; display: block; margin-top: 4px; }
+.crumb { font-size: 12px; color: var(--muted); margin: 14px 0; }
+.crumb span + span::before { content: " › "; }
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 14px 0; }
+.stat { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; }
+.stat b { display: block; font-size: 17px; font-variant-numeric: tabular-nums; }
+.stat small { color: var(--muted); font-size: 11px; }
+h3 { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin: 18px 0 8px; }
+.axgroup { margin-bottom: 8px; }
+.axgroup div { font-size: 11.5px; color: var(--muted); margin-bottom: 3px; }
+.chip { display: inline-block; font: 11.5px var(--mono); padding: 1px 6px; margin: 0 4px 4px 0; border-radius: 5px; background: var(--k-axiom-bg); color: var(--k-axiom); cursor: pointer; }
+.byline { font-size: 12.5px; color: var(--muted); }
+.chip.t { background: var(--bg); color: var(--ink); border: 1px solid var(--line); }
+table.sn { margin: 4px 0 10px; }
+table.sn td, table.sn th { padding: 3px 6px; }
+.members { margin-top: 6px; }
+a { color: var(--accent); }
+
+/* Overview */
+#overview { overflow: auto; padding: 20px; gap: 28px; flex-wrap: wrap; align-items: flex-start; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; }
+.card h2 { font-size: 15px; margin: 0 0 4px; }
+.card p { margin: 0 0 12px; color: var(--muted); font-size: 12.5px; max-width: 640px; }
+#heat { display: block; cursor: crosshair; }
+.lb-controls { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; font-size: 12.5px; color: var(--muted); margin-bottom: 10px; }
+.lb-controls select { font: inherit; color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 2px 4px; }
+table { border-collapse: collapse; font-size: 12.5px; width: 100%; }
+th { text-align: left; color: var(--muted); font-weight: 600; padding: 4px 8px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: var(--panel); }
+td { padding: 4px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+td.lbl { font-family: var(--mono); font-weight: 600; }
+td.st { max-width: 340px; overflow: hidden; text-overflow: ellipsis; }
+td.ch { max-width: 220px; overflow: hidden; text-overflow: ellipsis; color: var(--muted); }
+tbody tr { cursor: pointer; }
+tbody tr:hover { background: var(--accent-soft); }
+.lb-wrap { max-height: 70vh; overflow: auto; }
+
+.perc text { font: 11px var(--sans); fill: var(--muted); }
+.perc .grid line { stroke: var(--grid); }
+.perc .axis { stroke: var(--line); }
+.perc .series { fill: none; stroke-width: 2; stroke-linejoin: round; }
+.perc .lbl { font-weight: 600; fill: var(--ink); }
+.perc .cross { stroke: var(--muted); stroke-dasharray: 3 3; }
+.plegend { display: flex; gap: 14px; font-size: 12px; color: var(--muted); margin: 0 0 6px; }
+.plegend i { display: inline-block; width: 14px; height: 2px; vertical-align: middle; margin-right: 5px; }
+.headline { font-size: 13px; margin: 0 0 10px; }
+.headline b { font-variant-numeric: tabular-nums; }
+.dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+/* Logics view */
+#logics { overflow: auto; padding: 20px; gap: 20px; flex-wrap: wrap; align-items: flex-start; }
+#logics .card { min-width: 320px; }
+#hasse text { font-family: var(--sans); }
+.lnode { cursor: pointer; }
+.lnode rect { fill: var(--panel); stroke: var(--line); stroke-width: 1.2; }
+.lnode.sel rect { stroke: var(--accent); stroke-width: 2.2; }
+.lnode.new rect { stroke: var(--series-2); stroke-width: 2.2; stroke-dasharray: 5 3; }
+#sandboxCard { flex-basis: 100%; }
+.sb-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 28px; }
+@media (max-width: 900px) { .sb-grid { grid-template-columns: 1fr; } }
+.sb-item { display: flex; gap: 8px; align-items: baseline; padding: 2px 0; font-size: 12.5px; }
+.sb-item input { margin: 0; }
+.sb-item .nm { cursor: pointer; }
+.sb-item .nm:hover { color: var(--accent); }
+.sb-item code { font: 12px var(--mono); color: var(--muted); }
+.sb-item .tag { font-size: 10.5px; color: var(--series-2); border: 1px solid var(--series-2); border-radius: 99px; padding: 0 6px; }
+.sb-item .x { margin-left: auto; cursor: pointer; color: var(--muted); border: 0; background: none; font-size: 15px; line-height: 1; }
+.sb-item.off { opacity: .5; }
+.sb-add { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: 14px 0 4px; }
+.sb-add input { padding: 7px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--ink); font: 13px var(--mono); }
+.sb-add input:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+.sb-add button { padding: 7px 13px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); font: inherit; cursor: pointer; }
+.sb-add button.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+.sb-add button:disabled { opacity: .5; cursor: default; }
+.sb-add select { font: inherit; color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 2px 4px; }
+.sb-preview { font-size: 12.5px; color: var(--muted); min-height: 18px; }
+.sb-preview .err { color: var(--series-2); }
+.sb-preview b { color: var(--ink); font-family: var(--mono); font-weight: 600; }
+.sb-changes { margin-top: 10px; border-top: 1px solid var(--line); padding-top: 10px; }
+.sb-changes h3 { margin-top: 4px; }
+.sb-changes ul { margin: 4px 0 0; padding-left: 18px; }
+.sb-changes li { margin: 3px 0; font-size: 13px; }
+.lnode:hover rect { stroke: var(--accent); }
+.lnode .t { font-size: 12.5px; font-weight: 650; fill: var(--ink); }
+.lnode .s { font-size: 11px; fill: var(--muted); }
+.lnode .bar-bg { fill: var(--bg); stroke: none; }
+.lnode .bar { fill: var(--series-1); stroke: none; }
+.ledge { stroke: var(--edge); stroke-width: 1.5; fill: none; cursor: pointer; }
+.ledge.sel, .ledge:hover { stroke: var(--accent); stroke-width: 2.5; }
+.elabel { font-size: 11px; fill: var(--muted); cursor: pointer; }
+.st { font-weight: 600; }
+.st.proved, .st.given, .st.decided, .st.chained, .st.instance { color: var(--series-3); }
+.st.refuted { color: var(--series-2); }
+.st.unknown { color: var(--muted); }
+table.mx { width: auto; border-collapse: collapse; margin: 4px 12px 8px 0; display: inline-table; font: 12px var(--mono); }
+table.mx td, table.mx th { border: 1px solid var(--line); padding: 2px 7px; text-align: center; white-space: nowrap; position: static; }
+table.mx th { background: var(--bg); color: var(--muted); font-weight: 600; }
+table.mx td.des { background: var(--accent-soft); font-weight: 700; }
+.cert { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; margin: 8px 0; font-size: 12.5px; }
+.cert code { font: 11.5px var(--mono); word-break: break-all; }
+.ladder { display: flex; height: 22px; border-radius: 6px; overflow: hidden; margin: 6px 0 4px; }
+.ladder div { display: flex; align-items: center; justify-content: center; font-size: 11px; color: #fff; white-space: nowrap; overflow: hidden; }
+#tip { position: fixed; pointer-events: none; z-index: 50; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,.16); padding: 8px 10px; max-width: 440px; font-size: 12.5px; display: none; }
+#tip b { font-family: var(--mono); }
+#tip .s { font-size: 13.5px; margin: 4px 0; }
+#tip .m { color: var(--muted); font-size: 11.5px; }
+#loading { margin: auto; color: var(--muted); }
+
+@media (max-width: 900px) {
+  #explorer { flex-direction: column; }
+  aside { width: auto; border-left: 0; border-top: 1px solid var(--line); max-height: 45vh; }
+  .legend { margin-left: 0; }
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>Logic Graph Explorer</h1>
+  <div class="tabs"><button data-view="explorer" class="on">Explorer</button><button data-view="overview">Overview</button><button data-view="logics" id="logicsTab" style="display:none">Logics</button></div>
+  <div class="search"><input id="q" placeholder="Search a label, e.g. fta, syl, zorn…" autocomplete="off" spellcheck="false"><div class="results" id="results"></div></div>
+  <div class="meta" id="meta"></div>
+</header>
+<main>
+  <div id="loading">Loading graph…</div>
+  <section class="view" id="explorer">
+    <div class="canvas-wrap">
+      <div class="toolbar">
+        <label>Hops <select id="hops"><option value="1">1</option><option value="2">2</option></select></label>
+        <label id="collapseWrap" style="display:none" title="Merge near-duplicate theorems into supernodes">Collapse <select id="collapse"><option value="0">off</option><option value="1">level 1 · redundancy</option><option value="2">level 2 · + weakening</option><option value="3">level 3 · + exchange</option></select></label>
+        <label>Sort by <select id="sort"><option value="reach">reach</option><option value="indeg">cited by</option><option value="depth">depth</option><option value="order">file order</option></select></label>
+        <label><input type="checkbox" id="hideMb"> hide mathboxes</label>
+        <label><input type="checkbox" id="hideAlt" checked> <span id="hideAltText">hide ALT/OLD</span></label>
+        <label title="Dim nodes outside the focus theorem's Louvain community"><input type="checkbox" id="hlCom"> highlight community</label>
+        <span class="legend"><span><i style="border-color:var(--k-axiom);background:var(--k-axiom-bg)"></i>axiom</span><span><i style="border-color:var(--k-def);background:var(--k-def-bg)"></i>definition</span><span><i style="border-color:var(--line);background:var(--k-thm-bg)"></i>theorem</span><span><i style="border-color:var(--muted);border-style:dashed;background:var(--k-thm-bg)"></i>mathbox</span></span>
+      </div>
+      <div class="scroll" id="scroll"><svg id="graph"></svg></div>
+    </div>
+    <aside id="details"></aside>
+  </section>
+  <section class="view" id="overview">
+    <div class="card" id="percCard" style="flex:1;min-width:520px;max-width:760px">
+      <h2>What breaks when lemmas are deleted?</h2>
+      <p>Delete main-library statements one at a time and track the largest connected component (citations treated as undirected). Single deletions never matter here: the worst single node or edge cuts off 3 theorems. The question is how many deletions it takes, and in what order.</p>
+      <div class="headline" id="percHead"></div>
+      <div class="plegend"><span><i style="background:var(--series-1)"></i>most cited first</span><span><i style="background:var(--series-2)"></i>most reach first</span><span><i style="background:var(--series-3)"></i>random order (mean of 5)</span></div>
+      <svg id="perc" class="perc"></svg>
+    </div>
+    <div class="card" style="flex:1;min-width:520px">
+      <h2>Communities</h2>
+      <p>Louvain on the main library, each citation weighted by 1 / (times the lemma is cited) so glue like <code>syl</code> doesn't decide membership. "Purity" is the share of the community in its most common chapter; members are those most cited from inside the community. Click a row to open its top member.</p>
+      <div class="lb-wrap" style="max-height:440px"><table id="comTable"></table></div>
+    </div>
+    <div class="card">
+      <h2 id="heatTitle">Citations between chapters</h2>
+      <p id="heatText">Each cell counts proof citations from a lemma in the row's chapter to a theorem in the column's chapter (main library only, log color scale). Chapters are in file order, so mass sits on or above the diagonal. Hover for counts.</p>
+      <canvas id="heat"></canvas>
+    </div>
+    <div class="card" style="flex:1;min-width:520px">
+      <h2>Leaderboard</h2>
+      <p>Top 100 by the chosen score. Click a row to open it in the explorer.</p>
+      <div class="lb-controls">
+        <label>Score <select id="lbMetric"><option value="indeg">cited by (in-degree)</option><option value="reach">reach (transitive dependents)</option><option value="anc">depends on (transitive)</option><option value="depth">depth (longest chain)</option><option value="outdeg">uses (out-degree)</option><option value="pr">PageRank</option><option value="lp">dependency chains through (log10)</option><option value="pin">draws on many communities (lemma-side participation)</option><option value="pout">used across communities (citer-side participation)</option><option value="acut">cut-off if deleted (undirected)</option><option value="dcut">cut-off if deleted (dominator)</option></select></label>
+        <label><input type="checkbox" id="lbMb" checked> hide mathboxes</label>
+        <label><input type="checkbox" id="lbThm" checked> theorems only</label>
+        <label><input type="checkbox" id="lbHyp"> closed forms only (no hypotheses)</label>
+      </div>
+      <div class="lb-wrap"><table id="lb"></table></div>
+    </div>
+  </section>
+  <section class="view" id="logics">
+    <div class="card" id="sandboxCard" style="display:none">
+      <h2>Sandbox: change the assumptions</h2>
+      <p>Switch principles off and on, or add your own, and both maps below are recomputed in your browser: which logics exist, how they relate, and a certificate for every step (a countermodel, or a proof via the exact decision procedures). Propositional formulas go on the first map (on top of minimal logic); anything with □ or ◇ goes on the modal map (on top of K). Click a principle's name to find its logic on the map.</p>
+      <div class="sb-grid">
+        <div><h3>Propositional · on top of minimal logic</h3><div id="sbProp"></div></div>
+        <div><h3>Modal · on top of K</h3><div id="sbModal"></div></div>
+      </div>
+      <div class="sb-add">
+        <input id="sbFormula" size="34" placeholder="new assumption, e.g. ((p -> q) -> p) -> p  or  []p -> []<>p" spellcheck="false" autocomplete="off">
+        <input id="sbName" size="16" placeholder="name (optional)" spellcheck="false" autocomplete="off">
+        <button id="sbAdd" class="primary">Add assumption</button>
+        <label class="byline">combine up to <select id="sbCombo"><option value="1">1</option><option value="2">2</option><option value="3" selected>3</option></select> at a time</label>
+        <button id="sbReset">Reset to defaults</button>
+      </div>
+      <div class="sb-preview" id="sbPreview">Write -> or →, ~ or ¬, [] or □, &lt;&gt; or ◇, &amp;, |, &lt;-&gt;, and letters for variables. Polish notation (C, N, K, A, E, L, M) also works.</div>
+      <div class="sb-changes" id="sbChanges" style="display:none"></div>
+    </div>
+    <div class="card" style="flex:1.3;min-width:520px">
+      <h2>Map of logics</h2>
+      <p>Each box is a logic: minimal logic plus the principles named in it. A line means the upper logic proves everything the lower one assumes, and is certified strictly stronger by a countermodel. Logics that prove each other's principles are merged into one box. The bar shows how much of the generated classical library the logic proves (range when only bounds are known). Click a box or a line.</p>
+      <div style="overflow:auto;max-width:100%"><svg id="hasse"></svg></div>
+      <h3 style="margin-top:14px">The generated library, by weakest logic that proves it</h3>
+      <div class="ladder" id="ladder"></div>
+      <div class="byline" id="ladderText"></div>
+    </div>
+    <div class="card" style="flex:1;min-width:360px" id="logicDetail"></div>
+    <div class="card" style="flex:1;min-width:520px">
+      <h2>Principles</h2>
+      <p>The weakest of minimal ⊂ intuitionistic ⊂ classical that proves each principle (decided exactly). <b>If false, at least</b>: among small worlds (truth tables with up to 4 values) where minimal logic holds but the principle is false, the one that breaks the fewest library theorems, and how many it still breaks. An upper bound on the true minimum, since only small worlds are searched.</p>
+      <div class="lb-wrap" style="max-height:none"><table id="principleTable"></table></div>
+    </div>
+    <div class="card" style="flex:1.3;min-width:520px" id="modalCard">
+      <h2>Map of modal logics</h2>
+      <p>The same method with □ ("necessarily"). Every logic is K plus the principles named in it: D, T, B, 4, 5 (the "modal cube"), .2 and Löb's axiom. Countermodels are Kripke frames with up to 4 worlds; proofs come from an exact K decision procedure applied to instances of the axioms. The 32 combinations of D, T, B, 4, 5 collapse into exactly 15 logics, as the textbooks say. Click a box or a line.</p>
+      <div style="overflow:auto;max-width:100%"><svg id="hasseModal"></svg></div>
+    </div>
+    <div class="card" style="flex:1;min-width:360px" id="modalDetail"></div>
+    <div class="card" style="flex:1;min-width:520px" id="bridge"></div>
+  </section>
+</main>
+<div id="tip"></div>
+<script>
+  // ?data=gen shows the generated propositional universe; the default is set.mm.
+  window.DATASET = new URLSearchParams(location.search).get("data") === "gen" ? "gen" : "setmm";
+  document.write('<script src="' + (window.DATASET === "gen" ? "data_gen.js" : "data.js") + '"><\/script>');
+  document.write('<script src="logic_map.js" onerror="window.LOGIC_MAP = null"><\/script>');
+  document.write('<script src="modal_map.js" onerror="window.MODAL_MAP = null"><\/script>');
+  document.write('<script src="sandbox.js" onerror="window.Sandbox = null"><\/script>');
+</script>
+<script>
+"use strict";
+const G = window.GRAPH;
+const GEN = !!(G.meta && G.meta.source === "generated");   // generated universe vs set.mm
+const D = G.nodes, N = D.label.length;
+const PO = Int32Array.from(G.PO), P = Int32Array.from(G.P);
+const NAMES = G.names;
+const $ = s => document.querySelector(s);
+const fmt = n => n.toLocaleString("en-US");
+const esc = s => s.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+// ---------- derived structure ----------
+const byLabel = new Map(D.label.map((l, i) => [l, i]));
+const CO = new Int32Array(N + 1), C = new Int32Array(P.length);
+for (let k = 0; k < P.length; k++) CO[P[k] + 1]++;
+for (let i = 0; i < N; i++) CO[i + 1] += CO[i];
+{
+  const fill = CO.slice(0, N);
+  for (let v = 0; v < N; v++) for (let k = PO[v]; k < PO[v + 1]; k++) C[fill[P[k]]++] = v;
+}
+const parentsOf = i => P.subarray(PO[i], PO[i + 1]);
+const childrenOf = i => C.subarray(CO[i], CO[i + 1]);
+const mainCount = D.mathbox.reduce((a, m) => a + (m ? 0 : 1), 0);
+
+// Axioms each theorem transitively uses, as a bitset (nodes are in file order = topological order).
+const AX = []; D.kind.forEach((k, i) => { if (k === 0) AX.push(i); });
+const W = Math.ceil(AX.length / 32), axBits = new Uint32Array(N * W);
+AX.forEach((v, k) => { axBits[v * W + (k >> 5)] |= 1 << (k & 31); });
+for (let v = 0; v < N; v++)
+  for (let k = PO[v]; k < PO[v + 1]; k++) { const p = P[k]; for (let w = 0; w < W; w++) axBits[v * W + w] |= axBits[p * W + w]; }
+const axiomsOf = v => AX.filter((_, k) => axBits[v * W + (k >> 5)] >>> (k & 31) & 1);
+
+// ---------- pretty printing of set.mm ASCII ----------
+const SYM = {
+  "|-": "⊢", "->": "→", "<->": "↔", "-.": "¬", "/\\": "∧", "\\/": "∨", "A.": "∀", "E.": "∃", "E!": "∃!", "E*": "∃*",
+  "e.": "∈", "e/": "∉", "=/=": "≠", "C_": "⊆", "C.": "⊊", "(/)": "∅", "u.": "∪", "i^i": "∩", "\\": "∖", "X.": "×",
+  "|->": "↦", "<_": "≤", "~~": "≈", "~<": "≺", "~<_": "≼", "-->": "⟶", "o.": "∘", "`": "‘", "~P": "𝒫", "U.": "⋃",
+  "|^|": "⋂", "U_": "⋃", "|^|_": "⋂", "x.": "·", "RR": "ℝ", "CC": "ℂ", "NN": "ℕ", "NN0": "ℕ₀", "ZZ": "ℤ", "QQ": "ℚ",
+  "RR*": "ℝ*", "om": "ω", "_V": "V", "~~>": "⇝", "pi": "π", "+oo": "+∞", "-oo": "-∞", "<.": "⟨", ">.": "⟩",
+  "T.": "⊤", "F.": "⊥", "ph": "φ", "ps": "ψ", "ch": "χ", "th": "θ", "ta": "τ", "et": "η", "ze": "ζ", "si": "σ",
+  "rh": "ρ", "mu": "μ", "la": "λ", "ka": "κ", "-u": "-", "_i": "i", "_e": "e", "sqrt": "√", "-/\\": "⊼", "\\/_": "⊻",
+  "=>": "⇒", "[_": "[", "]_": "]", "-1-1->": "–1-1→", "-onto->": "–onto→", "-1-1-onto->": "–1-1-onto→", "^m": "↑m",
+  "Fn": " Fn ", "|`": "↾", "\"": "“", "~H": "ℋ", "_|_": "⊥", "+h": "+ℎ", ".h": "·ℎ", "<_O": "≤O",
+};
+const pretty = s => s.split(" ").map(t => SYM[t] ?? t).join(" ")
+  .replace(/\( /g, "(").replace(/ \)/g, ")").replace(/ ‘ /g, "‘").replace(/ ,/g, ",");
+const stmtOf = i => "⊢ " + pretty(D.stmt[i]);  // every node is a |- statement
+
+// ---------- tooltip ----------
+const tip = $("#tip");
+function showTip(e, html) {
+  tip.innerHTML = html; tip.style.display = "block";
+  const r = tip.getBoundingClientRect();
+  let x = e.clientX + 14, y = e.clientY + 14;
+  if (x + r.width > innerWidth - 8) x = e.clientX - r.width - 14;
+  if (y + r.height > innerHeight - 8) y = e.clientY - r.height - 14;
+  tip.style.left = x + "px"; tip.style.top = y + "px";
+}
+const hideTip = () => { tip.style.display = "none"; };
+const nodeTip = i => `<b>${esc(D.label[i])}</b><div class="s">${esc(stmtOf(i))}</div>
+  <div class="m">cited by ${fmt(D.indeg[i])} · reach ${fmt(D.reach[i])} · depends on ${fmt(D.anc[i])} · depth ${D.depth[i]}</div>
+  <div class="m">${esc(NAMES.chapter[D.chapter[i]])}</div>
+  ${HAS_ALGO && D.com[i] != null ? `<div class="m">community ${esc(comName(D.com[i]))}</div>` : ""}
+  ${state.collapse && snSize(i) > 1 ? `<div class="m">supernode of ${fmt(snSize(i))} theorems at level ${state.collapse}</div>` : ""}`;
+
+// ---------- state ----------
+const state = { focus: byLabel.get(GEN ? "imim2" : "fta") ?? 0, hops: 1, sort: "reach", hideMb: false, hideAlt: true, hlCom: false, collapse: 0, expanded: new Set() };
+
+// ---------- supernodes (generated data only) ----------
+const HAS_SN = GEN && Array.isArray(D.sn1);
+const SN = {};
+function snLevel(k) {          // { repOf[i]: representative id, members: Map rep -> ids }
+  if (!SN[k]) {
+    const repOf = new Int32Array(N), members = new Map();
+    for (let i = 0; i < N; i++) {
+      const r = byLabel.get(D["sn" + k][i]);
+      repOf[i] = r;
+      if (!members.has(r)) members.set(r, []);
+      members.get(r).push(i);
+    }
+    SN[k] = { repOf, members };
+  }
+  return SN[k];
+}
+const cls = v => state.collapse ? snLevel(state.collapse).repOf[v] : v;
+// Neighbours of a node, or of a whole supernode when the graph is collapsed.
+function nbr(v, dir) {
+  if (!state.collapse) return Array.from(dir(v));
+  const { members, repOf } = snLevel(state.collapse), out = new Set();
+  for (const m of members.get(v)) for (const u of dir(m)) { const r = repOf[u]; if (r !== v) out.add(r); }
+  return [...out];
+}
+const snSize = v => state.collapse ? snLevel(state.collapse).members.get(v).length : 1;
+const HAS_ALGO = Array.isArray(D.com);
+const COMS = (G.extras && G.extras.communities) || [];
+const comName = c => c == null ? "not analysed (mathbox / ALT)" : `#${c}${COMS[c] ? " · " + COMS[c].top_chapter : ""}`;
+const visible = i => !(state.hideMb && D.mathbox[i]) && !(state.hideAlt && (D.flags[i] & 1));
+const sortKey = { reach: i => -D.reach[i], indeg: i => -D.indeg[i], depth: i => -D.depth[i], order: i => i };
+
+// ---------- explorer ----------
+const NW = 190, NH = 26, VG = 8, CG = 110, TOP = 40, CAP = 25, CAP_OPEN = 400;
+const SVGNS = "http://www.w3.org/2000/svg";
+const el = (tag, attrs, parent) => { const e = document.createElementNS(SVGNS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); parent && parent.appendChild(e); return e; };
+
+function buildColumns() {
+  const f = cls(state.focus), key = sortKey[state.sort];
+  const sorted = arr => arr.filter(visible).sort((a, b) => key(a) - key(b));
+  const cols = new Map();
+  const take = (k, items) => {
+    const cap = state.expanded.has(k) ? CAP_OPEN : CAP;
+    cols.set(k, { items: items.slice(0, cap), total: items.length });
+  };
+  cols.set(0, { items: [f], total: 1 });
+  take(-1, sorted(nbr(f, parentsOf)));
+  take(1, sorted(nbr(f, childrenOf)));
+  if (state.hops > 1) {
+    for (const [k, nb] of [[-2, parentsOf], [2, childrenOf]]) {
+      const inner = cols.get(Math.sign(k)).items, seen = new Set([f, ...inner]), acc = new Set();
+      for (const v of inner) for (const u of nbr(v, nb)) if (!seen.has(u)) acc.add(u);
+      take(k, sorted([...acc]));
+    }
+  }
+  return cols;
+}
+
+function renderGraph() {
+  const svg = $("#graph"); svg.innerHTML = "";
+  const cols = buildColumns();
+  const keys = [...cols.keys()].sort((a, b) => a - b), k0 = keys[0];
+  const pos = new Map(); let maxH = 0;
+  const gEdges = el("g", {}, svg), gNodes = el("g", {}, svg);
+  const heads = { "-2": "lemmas' lemmas", "-1": "uses", "0": "focus", "1": "cited by", "2": "cited by citers" };
+  for (const k of keys) {
+    const c = cols.get(k), x = 16 + (k - k0) * (NW + CG);
+    const h = el("text", { x, y: 22, class: "colhead" }, gNodes);
+    h.textContent = k === 0 ? "focus" : `${heads[k]} · ${fmt(c.total)}`;
+    c.items.forEach((v, r) => {
+      const y = TOP + r * (NH + VG);
+      pos.set(`${k}:${v}`, { x, y });
+      const dim = state.hlCom && HAS_ALGO && k !== 0 && D.com[v] !== D.com[state.focus];
+      const g = el("g", { class: "node" + (k === 0 ? " focus" : "") + (dim ? " dim" : ""), transform: `translate(${x},${y})` }, gNodes);
+      const kind = D.kind[v], fill = kind === 0 ? "var(--k-axiom-bg)" : kind === 1 ? "var(--k-def-bg)" : "var(--k-thm-bg)";
+      const stroke = kind === 0 ? "var(--k-axiom)" : kind === 1 ? "var(--k-def)" : D.mathbox[v] ? "var(--muted)" : "var(--line)";
+      el("rect", { width: NW, height: NH, rx: 6, fill, stroke, "stroke-dasharray": D.mathbox[v] ? "4 3" : "" }, g);
+      const n = snSize(v), suffix = n > 1 ? ` ×${fmt(n)}` : "", room = 17 - suffix.length;
+      const lbl = (D.label[v].length > room ? D.label[v].slice(0, room - 1) + "…" : D.label[v]) + suffix;
+      const t = el("text", { x: 9, y: 17, "font-size": 12.5, "font-weight": 600, fill: kind === 0 ? "var(--k-axiom)" : kind === 1 ? "var(--k-def)" : "var(--k-thm)" }, g);
+      t.textContent = lbl;
+      const val = state.sort === "indeg" ? D.indeg[v] : state.sort === "depth" ? D.depth[v] : D.reach[v];
+      const s = el("text", { x: NW - 8, y: 17, "font-size": 10.5, "text-anchor": "end", fill: "var(--muted)" }, g);
+      s.textContent = state.sort === "order" ? "" : fmt(val);
+      g.dataset.v = v; g.dataset.k = k;
+      g.addEventListener("click", () => focus(v));
+      g.addEventListener("mousemove", e => showTip(e, nodeTip(v)));
+      g.addEventListener("mouseenter", () => hot(v, true));
+      g.addEventListener("mouseleave", () => { hideTip(); hot(v, false); });
+    });
+    let bottom = TOP + c.items.length * (NH + VG);
+    if (c.total > c.items.length || state.expanded.has(k)) {
+      const open = state.expanded.has(k);
+      const g = el("g", { class: "more node", transform: `translate(${x},${bottom})` }, gNodes);
+      el("rect", { width: NW, height: NH, rx: 6 }, g);
+      const t = el("text", { x: NW / 2, y: 17, "text-anchor": "middle" }, g);
+      t.textContent = open ? (c.total > c.items.length ? `showing ${c.items.length} of ${fmt(c.total)} · collapse` : "collapse")
+                           : `+ ${fmt(c.total - c.items.length)} more`;
+      g.addEventListener("click", () => { open ? state.expanded.delete(k) : state.expanded.add(k); renderGraph(); });
+      bottom += NH + VG;
+    }
+    maxH = Math.max(maxH, bottom);
+  }
+  // Edges between adjacent columns: lemma (left) -> theorem (right).
+  const edges = [];
+  for (const k of keys) {
+    if (!cols.has(k + 1)) continue;
+    const left = new Set(cols.get(k).items);
+    for (const v of cols.get(k + 1).items) for (const u of nbr(v, parentsOf)) if (left.has(u)) {
+      const a = pos.get(`${k}:${u}`), b = pos.get(`${k + 1}:${v}`);
+      const x1 = a.x + NW, y1 = a.y + NH / 2, x2 = b.x, y2 = b.y + NH / 2, mx = (x1 + x2) / 2;
+      const p = el("path", { d: `M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}`, class: "edge" }, gEdges);
+      p.dataset.a = u; p.dataset.b = v; edges.push(p);
+    }
+  }
+  svg._edges = edges;
+  const width = 16 + keys.length * NW + (keys.length - 1) * CG + 16;
+  svg.setAttribute("width", width); svg.setAttribute("height", maxH + 20);
+  // Keep the focus column in view.
+  const sc = $("#scroll"); sc.scrollTop = 0;
+  sc.scrollLeft = Math.max(0, (16 + (0 - k0) * (NW + CG)) - (sc.clientWidth - NW) / 2);
+}
+function hot(v, on) {
+  for (const p of $("#graph")._edges || []) if (+p.dataset.a === v || +p.dataset.b === v) p.classList.toggle("hot", on);
+}
+
+function axGroups(v) {
+  const groups = new Map();
+  for (const a of axiomsOf(v)) {
+    const g = NAMES.chapter[D.chapter[a]];
+    if (!groups.has(g)) groups.set(g, []);
+    groups.get(g).push(a);
+  }
+  return groups;
+}
+
+// Ranks (1 = highest) for the per-node algorithm scores, over the analysed main library.
+const RANK = {};
+function rankOf(key, v) {
+  if (!RANK[key]) {
+    const idx = []; for (let i = 0; i < N; i++) if (D[key][i] != null) idx.push(i);
+    idx.sort((a, b) => D[key][b] - D[key][a]);
+    RANK[key] = { pos: new Map(idx.map((i, r) => [i, r + 1])), n: idx.length };
+  }
+  return RANK[key].pos.get(v);
+}
+function algoHtml(v) {
+  if (!HAS_ALGO) return "";
+  if (D.com[v] == null) return `<h3>Graph algorithms</h3><div class="byline">Not analysed: the algorithms run on the main library without mathboxes or ALT/OLD proofs.</div>`;
+  const r = k => `#${fmt(rankOf(k, v))}`;
+  const prRank = r("pr"), nA = RANK.pr.n;
+  return `<h3>Graph algorithms</h3>
+    <div class="grid">
+      <div class="stat"><b>${prRank}</b><small>PageRank of ${fmt(nA)}</small></div>
+      <div class="stat"><b>10<sup>${D.lp[v].toFixed(1)}</sup></b><small>chains through</small></div>
+      <div class="stat"><b>${D.pin[v].toFixed(2)} / ${D.pout[v].toFixed(2)}</b><small>draws on / used across</small></div>
+      <div class="stat"><b>${fmt(D.acut[v])}</b><small>cut-off if deleted</small></div>
+      <div class="stat"><b>${fmt(D.dcut[v])}</b><small>dominated</small></div>
+      <div class="stat"><b>#${D.com[v]}</b><small>community</small></div>
+    </div>
+    <div class="byline">Community ${esc(comName(D.com[v]))}${COMS[D.com[v]] ? ` · ${fmt(+COMS[D.com[v]].size)} members` : ""}</div>`;
+}
+
+// Scores from the generated AND-OR hypergraph (only present with ?data=gen).
+function genHtml(v) {
+  if (!GEN || !D.gain) return "";
+  const scored = D.gain[v] != null;
+  const r = k => scored ? `#${fmt(rankOf(k, v))}` : "–";
+  const val = k => scored ? fmt(D[k][v]) : "–";
+  const sub = D.sub[v] && byLabel.has(D.sub[v]) ? byLabel.get(D.sub[v]) : null;
+  return `<h3>Lemma scores</h3>
+    <div class="grid">
+      <div class="stat"><b>${val("gain")}</b><small>naming gain · ${r("gain")}</small></div>
+      <div class="stat"><b>${val("ko")}</b><small>knockout · ${r("ko")}</small></div>
+      <div class="stat"><b>${val("lost")}</b><small>lost if removed</small></div>
+      <div class="stat"><b>${D.deep[v].toFixed(2)}</b><small>deep · #${fmt(rankOf("deep", v))}</small></div>
+      <div class="stat"><b>${D.steps[v]}</b><small>shortest proof</small></div>
+      <div class="stat"><b>${fmt(D.nder[v])}</b><small>derivations found</small></div>
+    </div>
+    ${D.logic && D.logic[v] ? `<div class="byline">Weakest logic that proves it: <b>${esc(D.logic[v])}</b>${LM ? ` (see the Logics tab)` : ""}.</div>` : ""}
+    <div class="byline">${scored ? "" : "Gain and knockout are only computed for non-redundant theorems well inside the horizon. "}${sub != null ? `Instance of <span class="chip" data-v="${sub}">${esc(D.label[sub])}</span>` : ""}</div>
+    <details class="raw" open><summary>shortest proof (D = detach, digits = axioms)</summary><code>${esc(D.proof[v])}</code></details>`;
+}
+
+function supernodeHtml(v) {
+  if (!HAS_SN) return "";
+  const rank = (key, r) => D[key][r] == null ? "" : ` <small>#${fmt(rankOf(key, r))}</small>`;
+  const val = (key, r) => D[key][r] == null ? "–" : fmt(D[key][r]);
+  let rows = "";
+  for (const k of [1, 2, 3]) {
+    const { repOf, members } = snLevel(k), r = repOf[v];
+    rows += `<tr><td>${k}</td><td><span class="chip t" data-v="${r}">${esc(D.label[r])}</span></td>
+      <td class="num">${fmt(members.get(r).length)}</td><td class="num">${val("sg" + k, r)}${rank("sg" + k, r)}</td>
+      <td class="num">${val("sk" + k, r)}${rank("sk" + k, r)}</td></tr>`;
+  }
+  const lvl = state.collapse || 2, L = snLevel(lvl);
+  const ms = L.members.get(L.repOf[v]).slice().sort((a, b) => D.steps[a] - D.steps[b] || a - b);
+  const chips = ms.slice(0, 24).map(m => `<span class="chip t" data-v="${m}" title="${esc(stmtOf(m))}">${esc(D.label[m])}</span>`).join("");
+  return `<h3>Supernodes</h3>
+    <table class="sn"><thead><tr><th>level</th><th>representative</th><th class="num">members</th><th class="num">gain</th><th class="num">knockout</th></tr></thead><tbody>${rows}</tbody></table>
+    <div class="byline">Level 1 merges special cases, level 2 also drops dummy hypotheses, level 3 also ignores hypothesis order. Gain and knockout free or forbid every member at once; # is the rank among scored supernodes.</div>
+    <div class="byline" style="margin-top:8px">Members at level ${lvl} (${fmt(ms.length)}):</div>
+    <div class="members">${chips}${ms.length > 24 ? ` <span class="byline">+ ${fmt(ms.length - 24)} more</span>` : ""}</div>`;
+}
+
+function renderDetails() {
+  const v = state.focus, k = D.kind[v];
+  const kindName = ["axiom", "definition", "theorem", "other axiom"][k];
+  const badges = [`<span class="badge k${k}">${kindName}</span>`];
+  if (D.hyps[v]) badges.push(`<span class="badge">inference · ${D.hyps[v]} hypothes${D.hyps[v] > 1 ? "es" : "is"}</span>`);
+  if (D.mathbox[v]) badges.push(`<span class="badge">mathbox</span>`);
+  if (D.flags[v] & 1) badges.push(`<span class="badge warn">${GEN ? "instance of a shorter theorem" : "ALT/OLD"}</span>`);
+  if (D.flags[v] & 2) badges.push(`<span class="badge warn">new usage discouraged</span>`);
+  const crumbs = ["part", "chapter", "section", "subsection"].map(c => NAMES[c][D[c][v]]).filter(Boolean)
+    .map(s => `<span>${esc(s)}</span>`).join("");
+  const pct = (100 * D.reach[v] / N).toFixed(D.reach[v] / N < 0.01 ? 2 : 1);
+  const groups = axGroups(v);
+  let axHtml = "";
+  for (const [g, list] of groups) axHtml += `<div class="axgroup"><div>${esc(g)}</div>${list.map(a => `<span class="chip" data-v="${a}">${esc(D.label[a])}</span>`).join("")}</div>`;
+  $("#details").innerHTML = `
+    <h2>${esc(D.label[v])}</h2>
+    <div class="badges">${badges.join("")}</div>
+    <div class="stmt">${esc(stmtOf(v))}</div>
+    <details class="raw"><summary>${GEN ? "ASCII form" : "set.mm source"}</summary><code>|- ${esc(D.stmt[v])}</code></details>
+    <div class="crumb">${crumbs}</div>
+    <div class="grid">
+      <div class="stat"><b>${fmt(D.indeg[v])}</b><small>cited by</small></div>
+      <div class="stat"><b>${fmt(D.outdeg[v])}</b><small>uses</small></div>
+      <div class="stat"><b>${D.depth[v]}</b><small>depth</small></div>
+      <div class="stat"><b>${fmt(D.reach[v])}</b><small>reach · ${pct}%</small></div>
+      <div class="stat"><b>${fmt(D.anc[v])}</b><small>depends on</small></div>
+      <div class="stat"><b>${axiomsOf(v).length}</b><small>axioms used</small></div>
+    </div>
+    <div class="byline">${D.date[v] ? `Contributed by ${esc(NAMES.contributor[D.who[v]])}, ${D.date[v]}` : ""}</div>
+    ${algoHtml(v)}
+    ${genHtml(v)}
+    ${supernodeHtml(v)}
+    <h3>Axioms used (transitively)</h3>
+    ${axHtml || '<div class="byline">None: this is provable without any axiom.</div>'}
+    ${GEN ? "" : `<h3>Links</h3>
+    <a href="https://us.metamath.org/mpeuni/${encodeURIComponent(D.label[v])}.html" target="_blank" rel="noopener">Open in Metamath Proof Explorer ↗</a>`}`;
+  $("#details").querySelectorAll(".chip").forEach(c => c.addEventListener("click", () => focus(+c.dataset.v)));
+  $("#details").scrollTop = 0;
+}
+
+function focus(v, push = true) {
+  state.focus = v; state.expanded.clear();
+  if (push) history.pushState(null, "", "#" + encodeURIComponent(D.label[v]));
+  hideTip(); renderGraph(); renderDetails(); setView("explorer");
+}
+
+// ---------- search ----------
+const q = $("#q"), results = $("#results"); let hits = [], sel = 0;
+function search(s) {
+  s = s.trim(); if (!s) return [];
+  const exact = [], pre = [], sub = [], lo = s.toLowerCase();
+  for (let i = 0; i < N; i++) {
+    const l = D.label[i];
+    if (l === s) exact.push(i);
+    else if (l.startsWith(s)) pre.push(i);
+    else if (sub.length < 200 && l.toLowerCase().includes(lo)) sub.push(i);
+  }
+  const by = (a, b) => D.reach[b] - D.reach[a] || D.label[a].length - D.label[b].length;
+  return [...exact, ...pre.sort(by), ...sub.sort(by)].slice(0, 30);
+}
+function drawResults() {
+  results.innerHTML = hits.map((i, k) => `<div data-v="${i}" class="${k === sel ? "sel" : ""}"><b>${esc(D.label[i])}</b><span>${esc(stmtOf(i))}</span></div>`).join("");
+  results.style.display = hits.length ? "block" : "none";
+  results.querySelectorAll("div").forEach(d => d.addEventListener("mousedown", e => { e.preventDefault(); pick(+d.dataset.v); }));
+}
+function pick(v) { q.value = ""; hits = []; drawResults(); q.blur(); focus(v); }
+q.addEventListener("input", () => { hits = search(q.value); sel = 0; drawResults(); });
+q.addEventListener("keydown", e => {
+  if (e.key === "ArrowDown") { sel = Math.min(sel + 1, hits.length - 1); drawResults(); e.preventDefault(); }
+  else if (e.key === "ArrowUp") { sel = Math.max(sel - 1, 0); drawResults(); e.preventDefault(); }
+  else if (e.key === "Enter" && hits[sel] !== undefined) pick(hits[sel]);
+  else if (e.key === "Escape") { hits = []; drawResults(); q.blur(); }
+});
+q.addEventListener("blur", () => setTimeout(() => { results.style.display = "none"; }, 100));
+document.addEventListener("keydown", e => { if (e.key === "/" && document.activeElement !== q) { e.preventDefault(); q.focus(); } });
+
+// ---------- controls ----------
+$("#hops").addEventListener("change", e => { state.hops = +e.target.value; state.expanded.clear(); renderGraph(); });
+$("#sort").addEventListener("change", e => { state.sort = e.target.value; renderGraph(); });
+$("#hideMb").addEventListener("change", e => { state.hideMb = e.target.checked; renderGraph(); });
+$("#hideAlt").addEventListener("change", e => { state.hideAlt = e.target.checked; renderGraph(); });
+$("#hlCom").addEventListener("change", e => { state.hlCom = e.target.checked; renderGraph(); });
+$("#collapse").addEventListener("change", e => { state.collapse = +e.target.value; state.expanded.clear(); renderGraph(); renderDetails(); });
+if (!HAS_ALGO) $("#hlCom").parentElement.style.display = "none";
+
+function setView(name) {
+  document.querySelectorAll(".tabs button").forEach(b => b.classList.toggle("on", b.dataset.view === name));
+  document.querySelectorAll(".view").forEach(s => s.classList.toggle("on", s.id === name));
+  if (name === "overview") { drawPerc(); drawComs(); drawHeat(); drawBoard(); }
+  if (name === "logics") drawLogics();
+}
+document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click", () => setView(b.dataset.view)));
+
+// ---------- overview: percolation ----------
+function drawPerc() {
+  const rows = (G.extras && G.extras.percolation) || [];
+  if (!rows.length) { $("#percCard").style.display = "none"; return; }
+  const total = +rows[0].removed === 0 ? mainTotal() : 0;
+  const series = [["most_cited", "most cited first", "--series-1"], ["most_reach", "most reach first", "--series-2"], ["random", "random", "--series-3"]];
+  const pts = rows.map(r => ({ k: +r.removed, ...Object.fromEntries(series.map(([c]) => [c, +r[c]])) }))
+    .filter(r => r.k < total);
+  const pct = (r, c) => 100 * r[c] / (total - r.k);
+  // Headline: first deletion count where the most-cited ordering leaves the largest component under half.
+  const half = pts.find(r => pct(r, "most_cited") < 50);
+  const atRandom = half && pct(half, "random");
+  $("#percHead").innerHTML = half
+    ? `Deleting the <b>${fmt(half.k)}</b> most-cited statements (${(100 * half.k / total).toFixed(0)}% of ${fmt(total)}) is what it takes to break the largest component below half of what's left. The same number of random deletions leaves <b>${atRandom.toFixed(0)}%</b> connected.`
+    : "";
+  const svg = $("#perc"), W = Math.min(720, svg.parentElement.clientWidth - 36), H = 300;
+  const m = { l: 44, r: 112, t: 10, b: 34 }, iw = W - m.l - m.r, ih = H - m.t - m.b;
+  svg.setAttribute("width", W); svg.setAttribute("height", H); svg.innerHTML = "";
+  const xmax = pts[pts.length - 1].k, X = k => m.l + iw * k / xmax, Y = y => m.t + ih * (1 - y / 100);
+  const grid = el("g", { class: "grid" }, svg);
+  for (const y of [0, 25, 50, 75, 100]) {
+    el("line", { x1: m.l, x2: m.l + iw, y1: Y(y), y2: Y(y) }, grid);
+    el("text", { x: m.l - 8, y: Y(y) + 4, "text-anchor": "end" }, svg).textContent = y + "%";
+  }
+  const step = xmax > 20000 ? 5000 : 2500;
+  for (let k = 0; k <= xmax; k += step) el("text", { x: X(k), y: H - 14, "text-anchor": "middle" }, svg).textContent = fmt(k);
+  el("text", { x: m.l + iw / 2, y: H - 1, "text-anchor": "middle" }, svg).textContent = "statements deleted";
+  el("line", { class: "axis", x1: m.l, x2: m.l + iw, y1: Y(0), y2: Y(0) }, svg);
+  const css = getComputedStyle(document.documentElement);
+  const ends = [];
+  for (const [c, name, tok] of series) {
+    const d = pts.map((r, i) => `${i ? "L" : "M"}${X(r.k).toFixed(1)},${Y(pct(r, c)).toFixed(1)}`).join("");
+    el("path", { d, class: "series", stroke: `var(${tok})` }, svg);
+    const last = pts[pts.length - 1];
+    ends.push({ name, y: Y(pct(last, c)), tok });
+  }
+  // Direct labels at line ends, nudged apart so they never collide.
+  ends.sort((a, b) => a.y - b.y);
+  for (let i = 1; i < ends.length; i++) ends[i].y = Math.max(ends[i].y, ends[i - 1].y + 14);
+  for (const e of ends) {
+    el("circle", { cx: m.l + iw + 6, cy: e.y - 4, r: 3, fill: `var(${e.tok})` }, svg);
+    el("text", { x: m.l + iw + 13, y: e.y, class: "lbl" }, svg).textContent = e.name;
+  }
+  // Crosshair + tooltip.
+  const cross = el("line", { class: "cross", y1: m.t, y2: m.t + ih, visibility: "hidden" }, svg);
+  const hit = el("rect", { x: m.l, y: m.t, width: iw, height: ih, fill: "transparent" }, svg);
+  hit.addEventListener("mousemove", e => {
+    const bx = svg.getBoundingClientRect().left, k = (e.clientX - bx - m.l) / iw * xmax;
+    const r = pts.reduce((a, b) => Math.abs(b.k - k) < Math.abs(a.k - k) ? b : a);
+    cross.setAttribute("x1", X(r.k)); cross.setAttribute("x2", X(r.k)); cross.setAttribute("visibility", "visible");
+    showTip(e, `<b style="font-family:var(--sans)">${fmt(r.k)} deleted</b> <span class="m">(${fmt(total - r.k)} left)</span>` +
+      series.map(([c, name, tok]) => `<div class="m"><span class="dot" style="background:var(${tok})"></span>${name}: <b style="color:var(--ink)">${pct(r, c).toFixed(1)}%</b> (${fmt(r[c])})</div>`).join(""));
+  });
+  hit.addEventListener("mouseleave", () => { cross.setAttribute("visibility", "hidden"); hideTip(); });
+}
+function mainTotal() { let n = 0; for (let i = 0; i < N; i++) if (HAS_ALGO && D.com[i] != null) n++; return n; }
+
+// ---------- overview: communities ----------
+function drawComs() {
+  if (!COMS.length) { $("#comTable").closest(".card").style.display = "none"; return; }
+  const rows = COMS.filter(c => +c.size >= 20);
+  $("#comTable").innerHTML = `<thead><tr><th class="num">#</th><th class="num">size</th><th>top chapter</th><th class="num">purity</th><th>representative members</th></tr></thead>
+    <tbody>${rows.map(c => `<tr data-l="${esc(c.most_cited_members.split(" ")[0])}"><td class="num">${c.community}</td><td class="num">${fmt(+c.size)}</td><td class="ch">${esc(c.top_chapter)}</td><td class="num">${(100 * c.purity).toFixed(0)}%</td><td class="lbl" style="font-weight:400">${esc(c.most_cited_members)}</td></tr>`).join("")}</tbody>`;
+  $("#comTable").querySelectorAll("tbody tr").forEach(tr => tr.addEventListener("click", () => {
+    const v = byLabel.get(tr.dataset.l); if (v != null) focus(v);
+  }));
+}
+
+// ---------- overview: chapter heatmap ----------
+let heat = null;
+function computeHeat() {
+  const chs = [], idx = new Map();
+  for (let i = 0; i < N; i++) if (!D.mathbox[i] && !idx.has(D.chapter[i])) { idx.set(D.chapter[i], chs.length); chs.push(D.chapter[i]); }
+  const n = chs.length, M = new Float64Array(n * n);
+  for (let v = 0; v < N; v++) {
+    if (D.mathbox[v]) continue;
+    const b = idx.get(D.chapter[v]);
+    for (const u of parentsOf(v)) if (!D.mathbox[u]) M[idx.get(D.chapter[u]) * n + b]++;
+  }
+  let max = 0; for (const x of M) max = Math.max(max, x);
+  return { chs, n, M, max };
+}
+function drawHeat() {
+  heat = heat || computeHeat();
+  const { n, M, max } = heat, cell = Math.max(4, Math.min(n < 30 ? 32 : 7, Math.floor((Math.min(innerWidth, 900) - 80) / n)));
+  const cv = $("#heat"), dpr = devicePixelRatio || 1, size = n * cell;
+  cv.width = size * dpr; cv.height = size * dpr; cv.style.width = size + "px"; cv.style.height = size + "px";
+  const ctx = cv.getContext("2d"); ctx.scale(dpr, dpr);
+  const rgb = getComputedStyle(document.documentElement).getPropertyValue("--heat").trim();
+  const lm = Math.log1p(max);
+  ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue("--bg"); ctx.fillRect(0, 0, size, size);
+  for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) {
+    const x = M[i * n + j]; if (!x) continue;
+    ctx.fillStyle = `rgba(${rgb},${(0.12 + 0.88 * Math.log1p(x) / lm).toFixed(3)})`;
+    ctx.fillRect(j * cell, i * cell, cell - (cell > 4 ? 1 : 0), cell - (cell > 4 ? 1 : 0));
+  }
+  cv.onmousemove = e => {
+    const r = cv.getBoundingClientRect(), j = Math.floor((e.clientX - r.left) / cell), i = Math.floor((e.clientY - r.top) / cell);
+    if (i < 0 || j < 0 || i >= n || j >= n) return hideTip();
+    showTip(e, `<div class="m">lemmas in</div><b style="font-family:var(--sans)">${esc(NAMES.chapter[heat.chs[i]])}</b>
+      <div class="m" style="margin-top:4px">cited by theorems in</div><b style="font-family:var(--sans)">${esc(NAMES.chapter[heat.chs[j]])}</b>
+      <div class="s">${fmt(M[i * n + j])} citations</div>`);
+  };
+  cv.onmouseleave = hideTip;
+}
+
+// ---------- overview: leaderboard ----------
+const fmtScore = (k, x) => x == null ? "–" : k === "pr" ? x.toExponential(2) : k === "lp" || k === "pin" || k === "pout" || k === "deep" ? x.toFixed(2) : fmt(x);
+const LB = { metric: "indeg", mb: true, thm: true, hyp: false };
+function drawBoard() {
+  const m = LB.metric, rows = [];
+  for (let i = 0; i < N; i++) {
+    if (LB.mb && D.mathbox[i]) continue;
+    if (LB.thm && D.kind[i] !== 2) continue;
+    if (LB.hyp && D.hyps[i]) continue;
+    if (D.flags[i] & 1) continue;
+    if (D[m] == null || D[m][i] == null) continue;
+    rows.push(i);
+  }
+  rows.sort((a, b) => D[m][b] - D[m][a]);
+  const top = rows.slice(0, 100);
+  const cols = [["indeg", "cited by"], ["reach", "reach"], ["anc", "depends on"], ["depth", "depth"]];
+  const extra = { pr: "PageRank", lp: "log10 chains", pin: "draws on", pout: "used across", acut: "cut-off", dcut: "dominated", outdeg: "uses",
+    gain: "naming gain", ko: "knockout", lost: "lost", deep: "deep",
+    sg1: "supernode gain", sg2: "supernode gain", sg3: "supernode gain", sk1: "supernode knockout", sk2: "supernode knockout", sk3: "supernode knockout" };
+  if (extra[m]) cols.unshift([m, extra[m]]);
+  $("#lb").innerHTML = `<thead><tr><th class="num">#</th><th>label</th><th>statement</th><th>chapter</th>${cols.map(([k, h]) => `<th class="num"${k === m ? ' style="color:var(--ink)"' : ""}>${h}</th>`).join("")}</tr></thead>
+    <tbody>${top.map((i, r) => `<tr data-v="${i}"><td class="num">${r + 1}</td><td class="lbl">${esc(D.label[i])}</td><td class="st">${esc(stmtOf(i))}</td><td class="ch">${esc(NAMES.chapter[D.chapter[i]])}</td>${cols.map(([k]) => `<td class="num">${fmtScore(k, D[k][i])}</td>`).join("")}</tr>`).join("")}</tbody>`;
+  $("#lb").querySelectorAll("tbody tr").forEach(tr => tr.addEventListener("click", () => focus(+tr.dataset.v)));
+}
+$("#lbMetric").addEventListener("change", e => { LB.metric = e.target.value; drawBoard(); });
+$("#lbMb").addEventListener("change", e => { LB.mb = e.target.checked; drawBoard(); });
+$("#lbThm").addEventListener("change", e => { LB.thm = e.target.checked; drawBoard(); });
+$("#lbHyp").addEventListener("change", e => { LB.hyp = e.target.checked; drawBoard(); });
+
+// ---------- logics view (propositional map and modal map share this code) ----------
+const LM = window.LOGIC_MAP || null;
+const MM = window.MODAL_MAP || null;
+const STATUS_TEXT = { given: "assumed", proved: "proved", chained: "proved (via another logic)", instance: "proved (via instances)", decided: "proved (decided)", refuted: "refuted", unknown: "unknown" };
+const STATUS_MARK = { given: "✓", proved: "✓", chained: "✓", instance: "✓", decided: "✓", refuted: "✗", unknown: "?" };
+// One context per map: which data, which elements, which selection.
+const VIEWS = [];
+if (LM) VIEWS.push({ kind: "propositional", M: LM, svg: "#hasse", detail: "#logicDetail", W: 210, state: { node: null, edge: null } });
+if (MM) VIEWS.push({ kind: "modal", M: MM, svg: "#hasseModal", detail: "#modalDetail", W: 132, state: { node: null, edge: null } });
+const viewKind = kind => VIEWS.find(v => v.kind === kind);
+const viewOf = M => VIEWS.find(v => v.M === M);
+
+function baseCells(M, axioms) {
+  const key = axioms.join("+");
+  return M.bases.find(b => b.axioms.join("+") === key).cells;
+}
+function principleName(M, k) { const p = M.principles.find(p => p.key === k); return p ? p.name : k; }
+function nodeTitle(n) {
+  if (n.flag === "inconsistent") return "inconsistent (proves everything)";
+  if (n.flag === "ver") return "Ver: every world a dead end";
+  if (n.title) return n.title;
+  return n.names.slice().sort((a, b) => a.length - b.length)[0];
+}
+
+function frameSvg(f, failing) {
+  // Worlds on a circle, arrows for accessibility, self-loops as small circles.
+  const n = f.worlds, R = n === 1 ? 0 : 44, cx = 70, cy = 74, r = 13;
+  const P = [...Array(n)].map((_, i) => ({ x: cx + R * Math.cos(-Math.PI / 2 + 2 * Math.PI * i / n), y: cy + R * Math.sin(-Math.PI / 2 + 2 * Math.PI * i / n) }));
+  let s = `<svg width="140" height="134" style="display:block"><defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/></marker></defs>`;
+  for (const [a, b] of f.arrows) {
+    if (a === b) { s += `<circle cx="${P[a].x}" cy="${P[a].y - r - 6}" r="7" fill="none" stroke="var(--muted)" stroke-width="1.2"/>`; continue; }
+    const dx = P[b].x - P[a].x, dy = P[b].y - P[a].y, L = Math.hypot(dx, dy), ux = dx / L, uy = dy / L;
+    const two = f.arrows.some(([c, d]) => c === b && d === a), off = two ? 4 : 0;
+    const x1 = P[a].x + ux * r - uy * off, y1 = P[a].y + uy * r + ux * off, x2 = P[b].x - ux * r - uy * off, y2 = P[b].y - uy * r + ux * off;
+    s += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="var(--muted)" stroke-width="1.2" marker-end="url(#arr)"/>`;
+  }
+  P.forEach((p, i) => {
+    const bad = failing && failing.world === i;
+    s += `<circle cx="${p.x}" cy="${p.y}" r="${r}" fill="${bad ? "var(--accent-soft)" : "var(--panel)"}" stroke="${bad ? "var(--accent)" : "var(--line)"}" stroke-width="${bad ? 2 : 1.2}"/><text x="${p.x}" y="${p.y + 4}" text-anchor="middle" font-size="11" fill="var(--ink)">w${i}</text>`;
+  });
+  return s + "</svg>";
+}
+function modelHtml(M, id, failing) {
+  const m = M.models[id];
+  if (!m) return "";
+  if (M.kind === "modal") {
+    const val = failing ? Object.entries(failing.valuation).map(([k, ws]) => `${esc(k)} true at ${ws.length ? ws.map(w => "w" + w).join(", ") : "no world"}`).join("; ") : "";
+    return `<div class="byline" style="margin:4px 0">Kripke frame · ${m.worlds} world${m.worlds > 1 ? "s" : ""} · an arrow means "can access"</div>${frameSvg(m, failing)}${failing ? `<div class="byline">With ${val}, it is false at w${failing.world} (highlighted).</div>` : ""}`;
+  }
+  const V = m.values, des = new Set(m.designated);
+  const cell = v => `<td class="${des.has(v) ? "des" : ""}">${esc(V[v])}</td>`;
+  const imp = `<table class="mx"><tr><th>→</th>${V.map(v => `<th>${esc(v)}</th>`).join("")}</tr>${m.imp.map((row, a) => `<tr><th>${esc(V[a])}</th>${row.map(cell).join("")}</tr>`).join("")}</table>`;
+  const neg = `<table class="mx"><tr><th>x</th>${V.map(v => `<th>${esc(v)}</th>`).join("")}</tr><tr><th>¬x</th>${m.neg.map(cell).join("")}</tr></table>`;
+  const fail = failing ? `<div class="byline">Fails when ${Object.entries(failing).map(([k, v]) => `${esc(k)} = ${esc(v)}`).join(", ")}.</div>` : "";
+  return `<div class="byline" style="margin:4px 0">${esc(m.name)} · ${V.length} values · shaded values count as true</div>${imp}${neg}${fail}`;
+}
+function cellHtml(M, k, c) {
+  const name = principleName(M, k), modal = M.kind === "modal";
+  if (c.status === "proved") return `<div class="cert"><b>Proof</b> (${c.steps} steps; digits are the axioms ${c.axioms.map((a, i) => `${i + 1} = ${esc(a)}`).join(", ")}; D = detach):<br><code>${esc(c.proof)}</code>${c.proves ? `<div class="byline">proves ${esc(c.proves)}</div>` : ""}</div>`;
+  if (c.status === "refuted") return modal
+    ? `<div class="cert"><b>Countermodel</b>: every axiom of this logic is valid on this frame (true at every world, however the letters are assigned), but ${esc(name)} is not.${modelHtml(M, c.model, c.falsified_by)}</div>`
+    : `<div class="cert"><b>Countermodel</b>: every axiom of this logic is true here and modus ponens preserves truth, but ${esc(name)} is not.${modelHtml(M, c.model, c.falsified_by)}</div>`;
+  if (c.status === "chained") { const via = M.bases.find(b => b.axioms.join("+") === c.via.join("+")); return `<div class="cert">This logic proves every axiom of <b>${esc(via ? via.name : c.via.join(" + "))}</b>, which proves ${esc(name)}. Derivability is transitive, so this logic proves it too.</div>`; }
+  if (c.status === "instance") return modal
+    ? `<div class="cert">K proves that ${c.instances.map(x => `<code>${esc(x.formula)}</code> (an instance of ${esc(principleName(M, x.of))})`).join(" and ")}, each also under □ up to ${c.depth} times, imply ${esc(name)}. Checked exactly by the K tableau; necessitation and modus ponens then give ${esc(name)}.</div>`
+    : `<div class="cert">${esc(c.by[0].toUpperCase() + c.by.slice(1))} logic, which this logic contains, proves that ${c.instances.map(x => `<code>${esc(x.formula)}</code> (an instance of ${esc(principleName(M, x.of))})`).join(" and ")} implies ${esc(name)}. Checked exactly by the decision procedure, so modus ponens gives ${esc(name)}.</div>`;
+  if (c.status === "decided") return `<div class="cert">An exact decision procedure shows it is a theorem of ${esc(c.by)}${modal ? "" : " logic"}, which this logic contains.</div>`;
+  if (c.status === "unknown") return `<div class="cert">Unresolved: no proof and no countermodel among the small models searched.</div>`;
+  return "";
+}
+
+function drawHasse(V) {
+  const { M, state } = V, nodes = M.nodes, edges = M.edges, n = nodes.length, redraw = () => drawHasse(V);
+  const rank = new Array(n).fill(0);
+  for (let it = 0; it < n; it++) for (const e of edges) rank[e.to] = Math.max(rank[e.to], rank[e.from] + 1);
+  const maxRank = Math.max(...rank), byRank = [];
+  rank.forEach((r, i) => (byRank[r] = byRank[r] || []).push(i));
+  // Order each rank by the mean position of the nodes below it (fewer crossings).
+  const slot = new Array(n).fill(0);
+  byRank.forEach((ids, r) => {
+    if (r > 0) {
+      const below = i => edges.filter(e => e.to === i).map(e => slot[e.from]);
+      const key = i => { const b = below(i); return b.length ? b.reduce((x, y) => x + y, 0) / b.length : 0; };
+      ids.sort((a, b) => key(a) - key(b));
+    }
+    ids.forEach((i, k) => { slot[i] = k - (ids.length - 1) / 2; });
+  });
+  // Boxes widen (up to a limit) to fit the longest title, e.g. when you add principles.
+  const W = Math.max(V.W, Math.min(240, 16 + 7.2 * Math.max(...nodes.map(nd => nodeTitle(nd).length)))), H = 54, GX = 22, GY = 70;
+  const addLabel = k => { const p = M.principles.find(q => q.key === k); return p && p.custom ? p.name : k; };
+  const widest = Math.max(...byRank.map(r => r.length));
+  const svgW = Math.max(520, widest * (W + GX) + 20), svgH = (maxRank + 1) * (H + GY) + 10;
+  const svg = $(V.svg); svg.innerHTML = ""; svg.setAttribute("width", svgW); svg.setAttribute("height", svgH);
+  const pos = [];
+  byRank.forEach((ids, r) => ids.forEach((i, k) => {
+    pos[i] = { x: (svgW - ids.length * (W + GX) + GX) / 2 + k * (W + GX), y: svgH - (r + 1) * (H + GY) + GY / 2 };
+  }));
+  const ge = el("g", {}, svg), gn = el("g", {}, svg);
+  edges.forEach((e, k) => {
+    const a = pos[e.from], b = pos[e.to];
+    const x1 = a.x + W / 2, y1 = a.y, x2 = b.x + W / 2, y2 = b.y + H;
+    const p = el("path", { d: `M${x1},${y1} C${x1},${(y1 + y2) / 2} ${x2},${(y1 + y2) / 2} ${x2},${y2}`, class: "ledge" + (state.edge === k ? " sel" : "") }, ge);
+    const lab = el("text", { x: x2 + (x1 - x2) * 0.3 + 5, y: y2 + (y1 - y2) * 0.3 + 4, class: "elabel" }, ge);
+    lab.textContent = e.adds.length ? "+ " + e.adds.map(addLabel).join(", ") : "";
+    for (const t of [p, lab]) t.addEventListener("click", () => { state.edge = k; state.node = null; redraw(); });
+  });
+  nodes.forEach((nd, i) => {
+    const { x, y } = pos[i];
+    const g = el("g", { class: "lnode" + (state.node === i ? " sel" : "") + (nd.isNew ? " new" : ""), transform: `translate(${x},${y})` }, gn);
+    el("rect", { width: W, height: H, rx: 8 }, g);
+    const t = el("text", { x: 10, y: 19, class: "t" }, g);
+    const title = nodeTitle(nd), room = Math.floor((W - 16) / 7.2);
+    t.textContent = title.length > room ? title.slice(0, room - 1) + "…" : title;
+    const s = el("text", { x: 10, y: 34, class: "s" }, g);
+    s.textContent = nd.bases.length > 1 ? `= ${nd.bases.length - 1} other${W < 180 ? "" : " presentation"}${nd.bases.length > 2 ? "s" : ""}` : "";
+    if (nd.library) {
+      const L = nd.library, bw = W - 20;
+      el("rect", { x: 10, y: 41, width: bw, height: 6, rx: 3, class: "bar-bg" }, g);
+      el("rect", { x: 10, y: 41, width: bw * L.lower / L.total, height: 6, rx: 3, class: "bar" }, g);
+      if (L.upper > L.lower) el("rect", { x: 10 + bw * L.lower / L.total, y: 41, width: bw * (L.upper - L.lower) / L.total, height: 6, rx: 3, class: "bar", opacity: 0.35 }, g);
+    }
+    g.addEventListener("click", () => { state.node = i; state.edge = null; redraw(); });
+    g.addEventListener("mousemove", e => showTip(e, `<b style="font-family:var(--sans)">${esc(nd.names.join(" = "))}</b>${nd.library ? `<div class="m">proves ${nd.library.lower === nd.library.upper ? fmt(nd.library.lower) : `${fmt(nd.library.lower)}–${fmt(nd.library.upper)}`} of ${fmt(nd.library.total)} library theorems</div>` : ""}`));
+    g.addEventListener("mouseleave", hideTip);
+  });
+  drawLogicDetail(V);
+}
+function drawLogicDetail(V) {
+  const { M, state } = V, box = $(V.detail);
+  if (state.edge != null) {
+    const e = M.edges[state.edge], lo = M.nodes[e.from], hi = M.nodes[e.to];
+    const c = e.strict_by ? baseCells(M, lo.rep)[e.strict_by] : null;
+    box.innerHTML = `<h2>${esc(nodeTitle(lo))} → ${esc(nodeTitle(hi))}</h2>
+      <p>The upper logic proves everything the lower one assumes${e.adds.length ? `, and adds ${e.adds.map(k => `<b>${esc(principleName(M, k))}</b>`).join(", ")}` : ""}.</p>
+      ${c ? `<h3>Why it is strictly stronger</h3><p>${esc(principleName(M, e.strict_by))} fails in a model of ${esc(nodeTitle(lo))}:</p>${cellHtml(M, e.strict_by, c)}` : "<p>No countermodel found: the step may not be strict.</p>"}`;
+    return;
+  }
+  const i = state.node ?? 0, nd = M.nodes[i], cells = baseCells(M, nd.rep);
+  const rows = M.principles.map(p => {
+    const c = cells[p.key];
+    return `<tr data-k="${p.key}"><td><span class="st ${c.status}">${STATUS_MARK[c.status]}</span></td><td>${esc(p.name)}</td><td class="lbl" style="font-weight:400">${esc(p.formula)}</td><td class="ch">${STATUS_TEXT[c.status]}</td></tr>`;
+  }).join("");
+  const L = nd.library;
+  box.innerHTML = `<h2>${esc(nodeTitle(nd))}</h2>
+    ${nd.names.length > 1 ? `<p>Equivalent presentations: ${nd.names.map(esc).join(" = ")}</p>` : "<p></p>"}
+    ${L ? `<p>Proves ${L.lower === L.upper ? `<b>${fmt(L.lower)}</b>` : `between <b>${fmt(L.lower)}</b> and <b>${fmt(L.upper)}</b>`} of the ${fmt(L.total)} generated library theorems.</p>` : ""}
+    <h3>Principles in this logic</h3>
+    <table><tbody>${rows}</tbody></table>
+    <div class="cellCert"></div>`;
+  box.querySelectorAll("tbody tr").forEach(tr => tr.addEventListener("click", () => {
+    const k = tr.dataset.k;
+    box.querySelector(".cellCert").innerHTML = `<h3>${esc(principleName(M, k))}</h3>` + (cellHtml(M, k, cells[k]) || "<div class='cert'>Assumed as an axiom of this logic.</div>");
+  }));
+}
+function drawLadder() {
+  const lib = LM && LM.library;
+  if (!lib) { $("#ladder").style.display = "none"; return; }
+  const parts = [["minimal", "var(--series-1)"], ["intuitionistic", "var(--series-3)"], ["classical", "var(--series-2)"]];
+  $("#ladder").innerHTML = parts.map(([k, c]) => `<div style="width:${100 * lib.by_logic[k] / lib.total}%;background:${c}">${100 * lib.by_logic[k] / lib.total > 8 ? k : ""}</div>`).join("");
+  $("#ladderText").innerHTML = parts.map(([k]) => `${k === "minimal" ? "provable in minimal logic" : k === "intuitionistic" ? "need explosion (intuitionistic, not minimal)" : "classical only"}: <b>${fmt(lib.by_logic[k])}</b> (${(100 * lib.by_logic[k] / lib.total).toFixed(1)}%)`).join(" · ") + ` — of ${fmt(lib.total)} non-redundant theorems with proofs of ≤ 17 steps.`;
+}
+function drawPrinciples() {
+  const V = viewKind("propositional");
+  if (!V) return;
+  const PM = V.M, br = PM.breakage || {};
+  $("#principleTable").innerHTML = `<thead><tr><th>principle</th><th>formula</th><th>weakest logic</th><th class="num">if false, at least</th><th>gentlest such world</th></tr></thead><tbody>${PM.principles.map(p => {
+    const b = br[p.key];
+    const world = b && b.model != null ? `${esc(PM.models[b.model].name)}` : (p.weakest === "minimal" ? "none: minimal logic proves it" : "–");
+    return `<tr data-k="${p.key}" title="${esc(p.note)}"><td>${esc(p.name)}</td><td class="lbl" style="font-weight:400">${esc(p.formula)}</td><td>${p.weakest}</td><td class="num">${b && b.broken != null ? `${fmt(b.broken)} (${(100 * b.broken / b.total).toFixed(0)}%)` : "–"}</td><td class="ch">${world}</td></tr>`;
+  }).join("")}</tbody>`;
+  $("#principleTable").querySelectorAll("tbody tr").forEach(tr => tr.addEventListener("click", () => {
+    const b = br[tr.dataset.k];
+    if (!b || b.model == null) return;
+    V.state.node = null; V.state.edge = null;
+    $("#logicDetail").innerHTML = `<h2>If ${esc(principleName(PM, tr.dataset.k))} were false</h2>
+      <p>The gentlest small world found where minimal logic holds but ${esc(principleName(PM, tr.dataset.k))} fails. ${fmt(b.broken)} of ${fmt(b.total)} library theorems fail there too.</p>
+      <p>Still true there: ${b.still_true.map(k => esc(principleName(PM, k))).join(", ") || "none of the catalog"}.</p>
+      <div class="cert">${modelHtml(PM, b.model, null)}</div>`;
+  }));
+}
+function drawBridge() {
+  const br = MM && MM.bridge, box = $("#bridge");
+  if (!br) { box.style.display = "none"; return; }
+  const s4n = br.s4_agree + br.s4_disagree;
+  box.innerHTML = `<h2>The bridge: intuitionistic logic inside S4</h2>
+    <p>The Gödel–McKinsey–Tarski translation puts □ ("provably") in front of every letter and every implication. A formula is an intuitionistic theorem exactly when its translation is an S4 theorem, and a classical theorem exactly when its translation is an S5 theorem. So the S4 → S5 edge in the modal map mirrors the intuitionistic → classical edge in the first map.</p>
+    <h3>Checked on the generated library</h3>
+    <p>A sample of ${fmt(br.sample)} library theorems (up to ${fmt(br.per_logic)} per weakest-logic tag; the intuitionistic-only tag has fewer):</p>
+    <table><tbody>
+      <tr><td>intuitionistic tag agrees with S4 validity of the translation</td><td class="num"><b>${fmt(br.s4_agree)}</b> of ${fmt(s4n)}</td></tr>
+      <tr><td>disagreements</td><td class="num"><b>${fmt(br.s4_disagree)}</b></td></tr>
+      <tr><td>S4 check over ${br.timeout_seconds} s (skipped)</td><td class="num">${fmt(br.s4_timeout)}</td></tr>
+      <tr><td>translation is an S5 theorem (theorems with ≤ 4 letters)</td><td class="num"><b>${fmt(br.s5_ok)}</b> of ${fmt(br.s5_ok + br.s5_fail)}</td></tr>
+    </tbody></table>
+    <h3>Examples</h3>
+    <table><thead><tr><th>principle</th><th>translation</th><th>S4</th><th>S5</th></tr></thead><tbody>${br.examples.map(x => `<tr><td>${esc(x.name)}<div class="byline">${esc(x.formula)}</div></td><td class="lbl" style="font-weight:400;white-space:normal">${esc(x.translation)}</td><td>${x.S4 ? "✓" : "✗"}</td><td>${x.S5 ? "✓" : "✗"}</td></tr>`).join("")}</tbody></table>`;
+}
+function drawLogics() {
+  if (SB && !sb.ready) sbInit();               // draws the static maps now; the sandbox replaces them when ready
+  for (const V of VIEWS) drawHasse(V);
+  drawLadder();
+  drawPrinciples();
+  drawBridge();
+  $("#modalCard").style.display = MM ? "" : "none";
+  $("#modalDetail").style.display = MM ? "" : "none";
+}
+if (LM || MM) $("#logicsTab").style.display = "";
+
+// ---------- sandbox: add or remove assumptions ----------
+const SB = window.Sandbox || null;
+const sb = { ready: false, combo: 3, lists: { propositional: [], modal: [] }, busy: false };
+const SB_STORE = "logicgraph-sandbox-v1";
+const sbLang = kind => kind === "modal" ? SB.MODAL : SB.PROP;
+const sbStatic = kind => kind === "modal" ? MM : LM;
+
+function sbDefaults(kind) {
+  const M = sbStatic(kind);
+  return M ? M.principles.map(p => ({ key: p.key, name: p.name, note: p.note || "", formula: SB.canon(SB.parsePolish(p.polish)), on: true, custom: false })) : [];
+}
+function sbSave() {
+  try { localStorage.setItem(SB_STORE, JSON.stringify({ combo: sb.combo, lists: sb.lists })); } catch (e) { /* storage unavailable */ }
+}
+function sbLoad() {
+  try {
+    const raw = localStorage.getItem(SB_STORE);
+    if (!raw) return false;
+    const saved = JSON.parse(raw);
+    if (!saved.lists || !Array.isArray(saved.lists.propositional)) return false;
+    sb.lists = saved.lists;
+    sb.combo = saved.combo || 3;
+    return true;
+  } catch (e) { return false; }
+}
+function sbInit() {
+  sb.ready = true;
+  if (!sbLoad()) for (const kind of ["propositional", "modal"]) sb.lists[kind] = sbDefaults(kind);
+  $("#sbCombo").value = String(sb.combo);
+  $("#sandboxCard").style.display = "";
+  sbRenderLists();
+  sbRecompute(["propositional", "modal"], null);
+}
+function sbRenderLists() {
+  for (const [kind, box] of [["propositional", "#sbProp"], ["modal", "#sbModal"]]) {
+    $(box).innerHTML = sb.lists[kind].map((p, i) => `<label class="sb-item${p.on ? "" : " off"}" title="${esc(p.note || "")}">
+      <input type="checkbox" data-kind="${kind}" data-i="${i}" ${p.on ? "checked" : ""}>
+      <span class="nm" data-kind="${kind}" data-key="${esc(p.key)}">${esc(p.name)}</span><code>${esc(SB.show(p.formula))}</code>
+      ${p.custom ? `<span class="tag">yours</span><button class="x" data-kind="${kind}" data-i="${i}" title="Remove this assumption">×</button>` : ""}</label>`).join("")
+      || `<div class="byline">No principles.</div>`;
+  }
+  document.querySelectorAll("#sandboxCard .sb-item input").forEach(cb => cb.addEventListener("change", () => {
+    const p = sb.lists[cb.dataset.kind][+cb.dataset.i];
+    p.on = cb.checked;
+    sbRenderLists();
+    sbRecompute([cb.dataset.kind], { kind: cb.dataset.kind, key: p.key, name: p.name, action: p.on ? "restored" : "removed" });
+  }));
+  document.querySelectorAll("#sandboxCard .sb-item .x").forEach(bt => bt.addEventListener("click", e => {
+    e.preventDefault();
+    const list = sb.lists[bt.dataset.kind], p = list[+bt.dataset.i];
+    list.splice(+bt.dataset.i, 1);
+    sbRenderLists();
+    sbRecompute([bt.dataset.kind], { kind: bt.dataset.kind, key: p.key, name: p.name, action: "deleted" });
+  }));
+  document.querySelectorAll("#sandboxCard .sb-item .nm").forEach(nm => nm.addEventListener("click", e => {
+    e.preventDefault();
+    sbSelectPrinciple(nm.dataset.kind, nm.dataset.key);
+  }));
+}
+function sbSelectPrinciple(kind, k) {
+  const V = viewKind(kind);
+  if (!V) return;
+  const i = V.M.nodes.findIndex(n => n.bases.some(b => b.length === 1 && b[0] === k));
+  if (i < 0) { $("#sbPreview").innerHTML = `That principle is switched off or is already a theorem of ${kind === "modal" ? "K" : "minimal logic"}, so it has no logic of its own.`; return; }
+  V.state.node = i; V.state.edge = null;
+  drawHasse(V);
+  $(V.kind === "modal" ? "#modalCard" : "#hasse").scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
+function sbRecompute(kinds, change) {
+  if (sb.busy) return;
+  sb.busy = true;
+  sbSave();
+  $("#sbAdd").disabled = true;
+  const box = $("#sbChanges");
+  box.style.display = "";
+  box.innerHTML = `<div class="byline">Recomputing ${kinds.join(" and ")} map${kinds.length > 1 ? "s" : ""}… (the first time also builds the countermodels: a few seconds)</div>`;
+  setTimeout(() => {
+    const lines = [], report = [];
+    try {
+      for (const kind of kinds) {
+        const V = viewKind(kind);
+        if (!V) continue;
+        const lang = sbLang(kind), active = sb.lists[kind].filter(p => p.on);
+        const old = V.M.sandbox ? V.M : null;
+        const M = SB.computeMap(lang, active, { maxCombo: sb.combo });
+        if (kind === "propositional" && LM && LM.library_models) SB.libraryBounds(M, active, LM.library_models, LM.library.by_logic);
+        if (old) lines.push(...sbDiff(old, M, kind));
+        lines.push(`<span class="byline">${kind === "modal" ? "Modal" : "Propositional"} map: ${M.nodes.length} logics, ${M.edges.length} edges, ${M.bases.length} combinations checked, ${fmt(M.status.unknown || 0)} unresolved, ${fmt(M.ms)} ms.</span>`);
+        V.M = M;
+        V.state.node = null; V.state.edge = null;
+        if (change && change.kind === kind && (change.action === "added" || change.action === "restored")) {
+          report.push(sbReport(M, change.key, lang));
+          const i = M.nodes.findIndex(n => n.bases.some(b => b.length === 1 && b[0] === change.key));
+          if (i >= 0) V.state.node = i;
+        }
+      }
+      for (const V of VIEWS) drawHasse(V);
+      drawPrinciples();
+      const head = change ? `${change.action === "added" ? "Added" : change.action === "restored" ? "Switched on" : change.action === "deleted" ? "Deleted" : "Switched off"} <b>${esc(change.name || principleName(viewKind(change.kind).M, change.key) || change.key)}</b>` : "Maps computed from the current assumptions";
+      box.innerHTML = `<h3>What changed</h3><p style="margin:0 0 6px">${head}.</p>${report.join("")}<ul>${lines.map(l => `<li>${l}</li>`).join("")}</ul>`;
+    } catch (err) {
+      box.innerHTML = `<div class="sb-preview"><span class="err">Could not recompute: ${esc(String(err.message || err))}</span></div>`;
+    } finally {
+      sb.busy = false;
+      $("#sbAdd").disabled = false;
+    }
+  }, 30);
+}
+
+// Compare two maps of the same language: which logics and edges appeared or disappeared.
+function sbDiff(old, M, kind) {
+  const lines = [];
+  const meets = (a, b) => a.names.some(x => b.names.includes(x));
+  M.nodes.forEach(n => { n.isNew = !old.nodes.some(o => meets(o, n)); });
+  const fresh = M.nodes.filter(n => n.isNew), gone = old.nodes.filter(o => !M.nodes.some(n => meets(o, n)));
+  if (fresh.length) lines.push(`New logic${fresh.length > 1 ? "s" : ""} (dashed outline): ${fresh.map(n => `<b>${esc(nodeTitle(n))}</b>`).join(", ")}`);
+  if (gone.length) lines.push(`No longer on the map: ${gone.map(n => esc(nodeTitle(n))).join(", ")}`);
+  // Merges: an old pair of separate logics that are now one.
+  for (const n of M.nodes) {
+    const was = old.nodes.filter(o => meets(o, n));
+    if (was.length > 1) lines.push(`Now the same logic: ${was.map(o => esc(nodeTitle(o))).join(" = ")}`);
+  }
+  for (const o of old.nodes) {
+    const now = M.nodes.filter(n => meets(o, n));
+    if (now.length > 1) lines.push(`Split apart: ${esc(nodeTitle(o))} is now ${now.map(n => esc(nodeTitle(n))).join(" and ")}`);
+  }
+  // Edges are compared by which logics they join (matched by shared presentations), not by titles.
+  const match = M.nodes.map(n => old.nodes.findIndex(o => meets(o, n)));
+  const ident = i => match[i] >= 0 ? "o" + match[i] : "n" + i;
+  const eo = new Map(old.edges.map(x => ["o" + x.from + ">o" + x.to, nodeTitle(old.nodes[x.from]) + " → " + nodeTitle(old.nodes[x.to])]));
+  const en = new Map(M.edges.map(x => [ident(x.from) + ">" + ident(x.to), nodeTitle(M.nodes[x.from]) + " → " + nodeTitle(M.nodes[x.to])]));
+  const addE = [...en].filter(([k]) => !eo.has(k)).map(([, v]) => v), delE = [...eo].filter(([k]) => !en.has(k)).map(([, v]) => v);
+  if (addE.length) lines.push(`New edges: ${addE.slice(0, 8).map(esc).join("; ")}${addE.length > 8 ? ` and ${addE.length - 8} more` : ""}`);
+  if (delE.length) lines.push(`Edges gone: ${delE.slice(0, 8).map(esc).join("; ")}${delE.length > 8 ? ` and ${delE.length - 8} more` : ""}`);
+  if (!fresh.length && !gone.length && !addE.length && !delE.length) lines.push("The shape of the map did not change.");
+  return lines;
+}
+
+// What a single principle does, read off the map: where it lands and how it relates to the others.
+function sbReport(M, k, lang) {
+  const name = principleName(M, k), floor = lang === SB.MODAL ? "K" : "minimal logic";
+  const base0 = M.bases.find(b => b.axioms.length === 0).cells;
+  if (base0[k] && base0[k].status === "decided") return `<p><b>${esc(name)}</b> is already a theorem of ${floor}, so it adds nothing: no new logic and no new edges.</p>`;
+  const ni = M.nodes.findIndex(n => n.bases.some(b => b.length === 1 && b[0] === k));
+  if (ni < 0) return "";
+  const node = M.nodes[ni], cells = M.bases.find(b => b.axioms.length === 1 && b.axioms[0] === k).cells;
+  const proving = st => ["given", "proved", "chained", "instance", "decided"].includes(st);
+  const others = M.principles.filter(p => p.key !== k);
+  const gives = others.filter(p => proving(cells[p.key].status) && !(base0[p.key] && base0[p.key].status === "decided"));
+  const single = q => M.bases.find(b => b.axioms.length === 1 && b.axioms[0] === q);
+  const givenBy = others.filter(p => single(p.key) && proving(single(p.key).cells[k].status));
+  const indep = others.filter(p => cells[p.key].status === "refuted" && single(p.key) && single(p.key).cells[k].status === "refuted");
+  const below = M.edges.filter(e => e.to === ni).map(e => nodeTitle(M.nodes[e.from]));
+  const above = M.edges.filter(e => e.from === ni).map(e => nodeTitle(M.nodes[e.to]));
+  const list = ps => ps.map(p => esc(p.name)).join(", ");
+  let where;
+  if (node.flag === "inconsistent") where = `On its own, <b>${esc(name)}</b> makes the logic <b>inconsistent</b>: it proves every formula. (For the propositional map this happens exactly when it is not a classical tautology.)`;
+  else if (node.bases.some(b => !b.includes(k))) where = `On its own, <b>${esc(name)}</b> gives a logic that was already there: <b>${esc(nodeTitle(node))}</b>${node.names.length > 2 ? ` (also ${node.names.filter(x => x !== nodeTitle(node) && !x.includes(name)).slice(0, 3).map(esc).join(", ")})` : ""}. Over ${floor} it is equivalent to ${node.bases.filter(b => b.length === 1 && b[0] !== k).map(b => esc(principleName(M, b[0]))).join(", ") || "that logic's principles"}.`;
+  else where = `On its own, <b>${esc(name)}</b> gives ${node.isNew ? "a <b>new logic</b>, " : ""}<b>${esc(nodeTitle(node))}</b>${below.length ? `, strictly above ${below.map(esc).join(" and ")}` : ""}${above.length ? ` and strictly below ${above.map(esc).join(" and ")}` : ""}.`;
+  const lib = node.library ? ` It proves ${node.library.lower === node.library.upper ? fmt(node.library.lower) : `${fmt(node.library.lower)}–${fmt(node.library.upper)}`} of the ${fmt(node.library.total)} generated library theorems.` : "";
+  return `<p>${where}${lib}</p><ul>
+    ${gives.length ? `<li>It proves: ${list(gives)}</li>` : ""}
+    ${givenBy.length ? `<li>It follows from: ${list(givenBy)}</li>` : ""}
+    ${indep.length ? `<li>Independent of (neither proves the other, both certified by countermodels): ${list(indep)}</li>` : ""}
+  </ul>`;
+}
+
+// Live preview of a typed assumption.
+function sbPreview() {
+  const src = $("#sbFormula").value.trim(), box = $("#sbPreview");
+  if (!src) { box.innerHTML = "Write -> or →, ~ or ¬, [] or □, &lt;&gt; or ◇, &amp;, |, &lt;-&gt;, and letters for variables. Polish notation (C, N, K, A, E, L, M) also works."; return null; }
+  let t;
+  try { t = SB.parse(src); } catch (e) { box.innerHTML = `<span class="err">${esc(e.message)}</span>`; return null; }
+  const modal = SB.hasBox(t), notes = [];
+  if (!modal && /[&|∧∨]|\/\\|\\\/|<->|↔/.test(src) && !/^[CNKAELMp-w]+$/.test(src))
+    notes.push("∧, ∨ and ↔ are written in terms of → and ¬ the classical way, so in minimal or intuitionistic logic they don't mean what they usually do");
+  let kind;
+  if (modal) {
+    kind = SB.isTheorem(t, "K") ? "already a theorem of K" : SB.isTheorem(t, "S4") ? "a theorem of S4, not of K" : "not a theorem of S4";
+    if (SB.nvars(t) >= 3) notes.push("with 3 or more letters, countermodels are searched on frames of up to 3 worlds only");
+  } else {
+    const w = ["minimal", "intuitionistic", "classical"].find(l => SB.isTheorem(t, l));
+    kind = w === "minimal" ? "already a theorem of minimal logic" : w ? `a theorem of ${w} logic, not of minimal logic` : "not a classical tautology: adding it makes the logic inconsistent";
+  }
+  box.innerHTML = `Goes on the <b style="font-family:var(--sans)">${modal ? "modal" : "propositional"}</b> map: <b>${esc(SB.show(t))}</b> · ${esc(kind)}${notes.length ? ` · <span class="err">${notes.map(esc).join("; ")}</span>` : ""}`;
+  return { t, modal };
+}
+function sbAdd() {
+  const parsed = sbPreview();
+  if (!parsed || sb.busy) return;
+  const kind = parsed.modal ? "modal" : "propositional", list = sb.lists[kind];
+  const dupe = list.find(p => SB.key(p.formula) === SB.key(parsed.t));
+  if (dupe) { $("#sbPreview").innerHTML += ` · <span class="err">that is already on the list as ${esc(dupe.name)}</span>`; return; }
+  let n = 1;
+  while (list.some(p => p.key === "X" + n)) n++;
+  const name = $("#sbName").value.trim() || "X" + n;
+  list.push({ key: "X" + n, name, note: "added by you", formula: parsed.t, on: true, custom: true });
+  $("#sbFormula").value = ""; $("#sbName").value = "";
+  sbRenderLists();
+  sbRecompute([kind], { kind, key: "X" + n, name, action: "added" });
+}
+if (SB) {
+  $("#sbFormula").addEventListener("input", sbPreview);
+  $("#sbFormula").addEventListener("keydown", e => { if (e.key === "Enter") sbAdd(); });
+  $("#sbName").addEventListener("keydown", e => { if (e.key === "Enter") sbAdd(); });
+  $("#sbAdd").addEventListener("click", sbAdd);
+  $("#sbCombo").addEventListener("change", e => { sb.combo = +e.target.value; sbRecompute(["propositional", "modal"], null); });
+  $("#sbReset").addEventListener("click", () => {
+    for (const kind of ["propositional", "modal"]) sb.lists[kind] = sbDefaults(kind);
+    sb.combo = 3; $("#sbCombo").value = "3";
+    for (const V of VIEWS) V.M = sbStatic(V.kind);
+    sbRenderLists();
+    sbRecompute(["propositional", "modal"], null);
+  });
+}
+
+// ---------- boot ----------
+const other = GEN ? `<a href="?">switch to set.mm</a>` : `<a href="?data=gen">switch to generated logic</a>`;
+if (GEN) {
+  $("#meta").innerHTML = `generated · ${fmt(N)} theorems provable in ≤ ${G.meta.library_steps} steps (horizon ${G.meta.max_steps}) · ${other}`;
+  $("#q").placeholder = "Search a label, e.g. imim2, id, pm2.24, notnotr…";
+  $("#hideAltText").textContent = "hide redundant instances";
+  $("#hideMb").parentElement.style.display = "none";
+  $("#lbMb").parentElement.style.display = "none";
+  $("#lbHyp").parentElement.style.display = "none";
+  $("#heatTitle").textContent = "Premises by proof length";
+  $("#heatText").textContent = "Each cell counts shortest-proof premises: a theorem with the row's proof length used to derive a theorem with the column's proof length (log color scale). Hover for counts.";
+  if (D.gain) {
+    $("#lbMetric").insertAdjacentHTML("afterbegin", `<option value="gain">naming gain</option><option value="ko">knockout</option><option value="lost">lost if removed</option><option value="deep">deep (steps ÷ size)</option>`);
+    $("#lbMetric").value = LB.metric = "gain";
+  }
+  if (HAS_SN) {
+    const opts = [1, 2, 3].map(k => `<option value="sg${k}">supernode gain · level ${k}</option><option value="sk${k}">supernode knockout · level ${k}</option>`).join("");
+    $("#lbMetric").insertAdjacentHTML("beforeend", opts);
+    $("#collapseWrap").style.display = "";
+  }
+} else {
+  $("#meta").innerHTML = `set.mm · ${fmt(N)} statements (${fmt(mainCount)} main, ${fmt(N - mainCount)} mathbox) · ${fmt(P.length)} citations · ${other}`;
+}
+$("#loading").remove();
+function fromHash() {
+  const l = decodeURIComponent(location.hash.slice(1));
+  if (byLabel.has(l)) focus(byLabel.get(l), false);
+  else focus(state.focus, false);
+}
+addEventListener("popstate", fromHash);
+fromHash();
+</script>
+</body>
+</html>

@@ -1,0 +1,1711 @@
+{
+ "floor": "linear",
+ "vars": 2,
+ "maxOps": 5,
+ "candidates": 32658,
+ "classes": 1155,
+ "examined": 1155,
+ "unsettled": 150,
+ "findings": [
+  {
+   "outcome": "equivalent",
+   "gained": [
+    "K",
+    "EFQ",
+    "DNE"
+   ],
+   "profile": "affine + EFQ + DNE",
+   "collapse": [
+    "K",
+    "EFQ"
+   ],
+   "examples": [
+    {
+     "formula": "¬(p → q) → p",
+     "size": 7,
+     "floor": "linear",
+     "gained": [
+      "K",
+      "EFQ",
+      "DNE"
+     ],
+     "profile": "affine + EFQ + DNE",
+     "named": null,
+     "outcome": "equivalent",
+     "collapse": [
+      "K",
+      "EFQ"
+     ],
+     "how": {
+      "K": [
+       "¬(p → ¬q) → p"
+      ],
+      "EFQ": [
+       "¬(p → p) → p"
+      ],
+      "DNE": [
+       "¬¬p → p"
+      ]
+     },
+     "similar": 308
+    }
+   ],
+   "count": 1
+  },
+  {
+   "outcome": "equivalent",
+   "gained": [
+    "K",
+    "EFQ"
+   ],
+   "profile": "affine + EFQ",
+   "collapse": [
+    "K",
+    "EFQ"
+   ],
+   "examples": [
+    {
+     "formula": "p → ((q ∨ ¬p) → q)",
+     "size": 9,
+     "floor": "linear",
+     "gained": [
+      "K",
+      "EFQ"
+     ],
+     "profile": "affine + EFQ",
+     "named": null,
+     "outcome": "equivalent",
+     "collapse": [
+      "K",
+      "EFQ"
+     ],
+     "how": {
+      "K": [
+       "q → ((p ∨ ¬q) → p)"
+      ],
+      "EFQ": [
+       "⊥ → ((p ∨ ¬⊥) → p)"
+      ]
+     },
+     "similar": 96
+    }
+   ],
+   "count": 1
+  },
+  {
+   "outcome": "equivalent",
+   "gained": [
+    "K",
+    "EFQ",
+    "NC"
+   ],
+   "profile": "affine + EFQ + NC",
+   "collapse": [
+    "K",
+    "EFQ"
+   ],
+   "examples": [
+    {
+     "formula": "p → ((q ∨ (p → ¬p)) → q)",
+     "size": 11,
+     "floor": "linear",
+     "gained": [
+      "K",
+      "EFQ",
+      "NC"
+     ],
+     "profile": "affine + EFQ + NC",
+     "named": null,
+     "outcome": "equivalent",
+     "collapse": [
+      "K",
+      "EFQ"
+     ],
+     "how": {
+      "K": [
+       "q → ((p ∨ (q → ¬q)) → p)"
+      ],
+      "EFQ": [
+       "⊥ → ((p ∨ (⊥ → ¬⊥)) → p)"
+      ],
+      "NC": [
+       "(p ∧ ¬p) → ¬(⊥ ∨ ((p ∧ ¬p) → ¬(p ∧ ¬p)))"
+      ]
+     },
+     "similar": 5
+    }
+   ],
+   "count": 1
+  },
+  {
+   "outcome": "equivalent",
+   "gained": [
+    "EFQ"
+   ],
+   "profile": "linear + EFQ",
+   "collapse": [
+    "EFQ"
+   ],
+   "examples": [
+    {
+     "formula": "p → (¬p → q)",
+     "size": 7,
+     "floor": "linear",
+     "gained": [
+      "EFQ"
+     ],
+     "profile": "linear + EFQ",
+     "named": null,
+     "outcome": "equivalent",
+     "collapse": [
+      "EFQ"
+     ],
+     "how": {
+      "EFQ": [
+       "⊥ → (¬⊥ → p)"
+      ]
+     },
+     "similar": 756
+    }
+   ],
+   "count": 1
+  },
+  {
+   "outcome": "equivalent",
+   "gained": [
+    "W",
+    "NC"
+   ],
+   "profile": "relevant + NC",
+   "collapse": [
+    "W"
+   ],
+   "examples": [
+    {
+     "formula": "(p ∧ (p → q)) → q",
+     "size": 7,
+     "floor": "linear",
+     "gained": [
+      "W",
+      "NC"
+     ],
+     "profile": "relevant + NC",
+     "named": null,
+     "outcome": "equivalent",
+     "collapse": [
+      "W"
+     ],
+     "how": {
+      "W": [
+       "(p ∧ (p → ((p → (p → q)) → q))) → ((p → (p → q)) → q)"
+      ],
+      "NC": [
+       "(p ∧ (p → p)) → p"
+      ]
+     },
+     "similar": 214
+    }
+   ],
+   "count": 1
+  },
+  {
+   "outcome": "equivalent",
+   "gained": [
+    "K",
+    "LEM",
+    "WLEM",
+    "NC"
+   ],
+   "profile": "affine + LEM + WLEM + NC",
+   "collapse": [
+    "K"
+   ],
+   "examples": [
+    {
+     "formula": "(p → (q → p)) ∧ (p ∨ ¬p)",
+     "size": 11,
+     "floor": "linear",
+     "gained": [
+      "K",
+      "LEM",
+      "WLEM",
+      "NC"
+     ],
+     "profile": "affine + LEM + WLEM + NC",
+     "named": null,
+     "outcome": "equivalent",
+     "collapse": [
+      "K"
+     ],
+     "how": {
+      "K": [
+       "(p → (q → p)) ∧ (p ∨ ¬p)"
+      ],
+      "LEM": [
+       "(p → (p → p)) ∧ (p ∨ ¬p)"
+      ],
+      "WLEM": [
+       "(p → (p → p)) ∧ (p ∨ ¬p)"
+      ],
+      "NC": [
+       "(p → (p → p)) ∧ (p ∨ ¬p)"
+      ]
+     },
+     "similar": 14
+    }
+   ],
+   "count": 1
+  },
+  {
+   "outcome": "equivalent",
+   "gained": [
+    "K",
+    "LIN",
+    "DIST"
+   ],
+   "profile": "affine + LIN + DIST",
+   "collapse": [
+    "K"
+   ],
+   "examples": [
+    {
+     "formula": "(p → q) ∨ (q → (p ∧ (p → q)))",
+     "size": 11,
+     "floor": "linear",
+     "gained": [
+      "K",
+      "LIN",
+      "DIST"
+     ],
+     "profile": "affine + LIN + DIST",
+     "named": null,
+     "outcome": "equivalent",
+     "collapse": [
+      "K"
+     ],
+     "how": {
+      "K": [
+       "(q → (p → p)) ∨ ((p → p) → (q ∧ (q → (p → p))))"
+      ],
+      "LIN": [
+       "(p → q) ∨ (q → (p ∧ (p → q)))"
+      ],
+      "DIST": [
+       "(q → r) ∨ (r → (q ∧ (q → r)))"
+      ]
+     },
+     "similar": 1
+    }
+   ],
+   "count": 1
+  },
+  {
+   "outcome": "new",
+   "gained": [],
+   "profile": "linear",
+   "collapse": [],
+   "examples": [
+    {
+     "formula": "p → (p → p)",
+     "size": 5,
+     "floor": "linear",
+     "gained": [],
+     "profile": "linear",
+     "named": null,
+     "outcome": "new",
+     "witness": {
+      "model": "4-element chain",
+      "values": [
+       "0",
+       "1",
+       "2",
+       "3"
+      ],
+      "falsified_by": {
+       "p": "2"
+      }
+     },
+     "refutes": [
+      "K",
+      "W",
+      "EFQ",
+      "DNE",
+      "LEM",
+      "WLEM",
+      "LIN",
+      "PEIRCE",
+      "NC",
+      "DIST"
+     ],
+     "similar": 2987,
+     "collapse": []
+    },
+    {
+     "formula": "p → (¬p → p)",
+     "size": 7,
+     "floor": "linear",
+     "gained": [],
+     "profile": "linear",
+     "named": null,
+     "outcome": "new",
+     "witness": {
+      "model": "3-valued",
+      "values": [
+       "0",
+       "1",
+       "2"
+      ],
+      "falsified_by": {
+       "p": "1"
+      }
+     },
+     "refutes": [
+      "K",
+      "W",
+      "EFQ",
+      "DNE",
+      "LEM",
+      "WLEM",
+      "LIN",
+      "PEIRCE",
+      "NC",
+      "DIST"
+     ],
+     "similar": 532,
+     "collapse": []
+    },
+    {
+     "formula": "p → (p → (p → p))",
+     "size": 7,
+     "floor": "linear",
+     "gained": [],
+     "profile": "linear",
+     "named": null,
+     "outcome": "new",
+     "witness": {
+      "model": "4-element chain",
+      "values": [
+       "0",
+       "1",
+       "2",
+       "3"
+      ],
+      "falsified_by": {
+       "p": "2"
+      }
+     },
+     "refutes": [
+      "K",
+      "W",
+      "EFQ",
+      "DNE",
+      "LEM",
+      "WLEM",
+      "LIN",
+      "PEIRCE",
+      "NC",
+      "DIST"
+     ],
+     "similar": 405,
+     "collapse": []
+    }
+   ],
+   "count": 840
+  },
+  {
+   "outcome": "new",
+   "gained": [
+    "W",
+    "LEM",
+    "WLEM",
+    "NC"
+   ],
+   "profile": "relevant + LEM + WLEM + NC",
+   "collapse": [],
+   "examples": [
+    {
+     "formula": "p ∨ (p → q)",
+     "size": 5,
+     "floor": "linear",
+     "gained": [
+      "W",
+      "LEM",
+      "WLEM",
+      "NC"
+     ],
+     "profile": "relevant + LEM + WLEM + NC",
+     "named": null,
+     "outcome": "new",
+     "witness": {
+      "model": "Heyting(3)",
+      "values": [
+       "0",
+       "a1",
+       "1"
+      ],
+      "falsified_by": {
+       "p": "a1",
+       "q": "0"
+      }
+     },
+     "refutes": [
+      "K",
+      "EFQ",
+      "DNE",
+      "LIN",
+      "PEIRCE",
+      "DIST"
+     ],
+     "similar": 2258,
+     "collapse": []
+    },
+    {
+     "formula": "p ∨ ((p ∨ q) → q)",
+     "size": 7,
+     "floor": "linear",
+     "gained": [
+      "W",
+      "LEM",
+      "WLEM",
+      "NC"
+     ],
+     "profile": "relevant + LEM + WLEM + NC",
+     "named": null,
+     "outcome": "new",
+     "witness": {
+      "model": "Heyting(3)",
+      "values": [
+       "0",
+       "a1",
+       "1"
+      ],
+      "falsified_by": {
+       "p": "a1",
+       "q": "0"
+      }
+     },
+     "refutes": [
+      "K",
+      "EFQ",
+      "DNE",
+      "LIN",
+      "PEIRCE",
+      "DIST"
+     ],
+     "similar": 229,
+     "collapse": []
+    },
+    {
+     "formula": "(p ∧ ¬q) ∨ (p → q)",
+     "size": 9,
+     "floor": "linear",
+     "gained": [
+      "W",
+      "LEM",
+      "WLEM",
+      "NC"
+     ],
+     "profile": "relevant + LEM + WLEM + NC",
+     "named": null,
+     "outcome": "new",
+     "witness": {
+      "model": "Heyting(3)",
+      "values": [
+       "0",
+       "a1",
+       "1"
+      ],
+      "falsified_by": {
+       "p": "a1",
+       "q": "0"
+      }
+     },
+     "refutes": [
+      "K",
+      "EFQ",
+      "DNE",
+      "LIN",
+      "PEIRCE",
+      "DIST"
+     ],
+     "similar": 11,
+     "collapse": []
+    }
+   ],
+   "count": 16
+  },
+  {
+   "outcome": "new",
+   "gained": [
+    "NC"
+   ],
+   "profile": "linear + NC",
+   "collapse": [],
+   "examples": [
+    {
+     "formula": "(p ∧ ¬p) → q",
+     "size": 7,
+     "floor": "linear",
+     "gained": [
+      "NC"
+     ],
+     "profile": "linear + NC",
+     "named": null,
+     "outcome": "new",
+     "witness": {
+      "model": "Boolean",
+      "values": [
+       "0",
+       "1"
+      ],
+      "falsified_by": {
+       "p": "1",
+       "q": "0"
+      }
+     },
+     "refutes": [
+      "K",
+      "W",
+      "EFQ",
+      "DNE",
+      "LEM",
+      "WLEM",
+      "LIN",
+      "PEIRCE",
+      "DIST"
+     ],
+     "similar": 197,
+     "collapse": []
+    },
+    {
+     "formula": "(p ∧ (q ∨ ¬p)) → q",
+     "size": 9,
+     "floor": "linear",
+     "gained": [
+      "NC"
+     ],
+     "profile": "linear + NC",
+     "named": null,
+     "outcome": "new",
+     "witness": {
+      "model": "Boolean",
+      "values": [
+       "0",
+       "1"
+      ],
+      "falsified_by": {
+       "p": "1",
+       "q": "0"
+      }
+     },
+     "refutes": [
+      "K",
+      "W",
+      "EFQ",
+      "DNE",
+      "LEM",
+      "WLEM",
+      "LIN",
+      "PEIRCE",
+      "DIST"
+     ],
+     "similar": 36,
+     "collapse": []
+    },
+    {
+     "formula": "p → ¬(p → ¬p)",
+     "size": 9,
+     "floor": "linear",
+     "gained": [
+      "NC"
+     ],
+     "profile": "linear + NC",
+     "named": null,
+     "outcome": "new",
+     "witness": {
+      "model": "four-element square",
+      "values": [
+       "0",
+       "a",
+       "b",
+       "1"
+      ],
+      "falsified_by": {
+       "p": "b"
+      }
+     },
+     "refutes": [
+      "K",
+      "W",
+      "EFQ",
+      "DNE",
+      "LEM",
+      "WLEM",
+      "LIN",
+      "PEIRCE",
+      "DIST"
+     ],
+     "similar": 54,
+     "collapse": []
+    }
+   ],
+   "count": 30
+  },
+  {
+   "outcome": "new",
+   "gained": [
+    "LEM",
+    "WLEM",
+    "NC"
+   ],
+   "profile": "linear + LEM + WLEM + NC",
+   "collapse": [],
+   "examples": [
+    {
+     "formula": "(¬p → p) → p",
+     "size": 7,
+     "floor": "linear",
+     "gained": [
+      "LEM",
+      "WLEM",
+      "NC"
+     ],
+     "profile": "linear + LEM + WLEM + NC",
+     "named": null,
+     "outcome": "new",
+     "witness": {
+      "model": "3-valued",
+      "values": [
+       "0",
+       "1",
+       "2"
+      ],
+      "falsified_by": {
+       "p": "1"
+      }
+     },
+     "refutes": [
+      "K",
+      "W",
+      "EFQ",
+      "DNE",
+      "LIN",
+      "PEIRCE",
+      "DIST"
+     ],
+     "similar": 254,
+     "collapse": []
+    },
+    {
+     "formula": "p ∨ ((p → p) ∧ ¬p)",
+     "size": 9,
+     "floor": "linear",
+     "gained": [
+      "LEM",
+      "WLEM",
+      "NC"
+     ],
+     "profile": "linear + LEM + WLEM + NC",
+     "named": null,
+     "outcome": "new",
+     "witness": {
+      "model": "pentagon N5 (not distributive)",
+      "values": [
+       "0",
+       "a",
+       "b",
+       "c",
+       "1"
+      ],
+      "falsified_by": {
+       "p": "a"
+      }
+     },
+     "refutes": [
+      "K",
+      "W",
+      "EFQ",
+      "DNE",
+      "LIN",
+      "PEIRCE",
+      "DIST"
+     ],
+     "similar": 30,
+     "collapse": []
+    },
+    {
+     "formula": "p ∨ (¬p ∧ (q → q))",
+     "size": 9,
+     "floor": "linear",
+     "gained": [
+      "LEM",
+      "WLEM",
+      "NC"
+     ],
+     "profile": "linear + LEM + WLEM + NC",
+     "named": null,
+     "outcome": "new",
+     "witness": {
+      "model": "pentagon N5 (not distributive)",
+      "values": [
+       "0",
+       "a",
+       "b",
+       "c",
+       "1"
+      ],
+      "falsified_by": {
+       "p": "a",
+       "q": "a"
+      }
+     },
+     "refutes": [
+      "K",
+      "W",
+      "EFQ",
+      "DNE",
+      "LIN",
+      "PEIRCE",
+      "DIST"
+     ],
+     "similar": 17,
+     "collapse": []
+    }
+   ],
+   "count": 67
+  },
+  {
+   "outcome": "new",
+   "gained": [
+    "W",
+    "NC"
+   ],
+   "profile": "relevant + NC",
+   "collapse": [],
+   "examples": [
+    {
+     "formula": "(p ∧ (q ∨ (p → q))) → q",
+     "size": 9,
+     "floor": "linear",
+     "gained": [
+      "W",
+      "NC"
+     ],
+     "profile": "relevant + NC",
+     "named": null,
+     "outcome": "new",
+     "witness": {
+      "model": "diamond M3 (not distributive)",
+      "values": [
+       "0",
+       "a",
+       "b",
+       "c",
+       "1"
+      ],
+      "falsified_by": {
+       "p": "b",
+       "q": "a"
+      }
+     },
+     "refutes": [
+      "K",
+      "EFQ",
+      "DNE",
+      "LEM",
+      "WLEM",
+      "LIN",
+      "PEIRCE",
+      "DIST"
+     ],
+     "similar": 47,
+     "collapse": []
+    },
+    {
+     "formula": "(p ∧ (p → q)) → (q ∧ (p → p))",
+     "size": 11,
+     "floor": "linear",
+     "gained": [
+      "W",
+      "NC"
+     ],
+     "profile": "relevant + NC",
+     "named": null,
+     "outcome": "new",
+     "witness": {
+      "model": "4-element chain",
+      "values": [
+       "0",
+       "1",
+       "2",
+       "3"
+      ],
+      "falsified_by": {
+       "p": "2",
+       "q": "3"
+      }
+     },
+     "refutes": [
+      "K",
+      "EFQ",
+      "DNE",
+      "LEM",
+      "WLEM",
+      "LIN",
+      "PEIRCE",
+      "DIST"
+     ],
+     "similar": 0,
+     "collapse": []
+    },
+    {
+     "formula": "p → ((p → (q ∨ (p → q))) → q)",
+     "size": 11,
+     "floor": "linear",
+     "gained": [
+      "W",
+      "NC"
+     ],
+     "profile": "relevant + NC",
+     "named": null,
+     "outcome": "new",
+     "witness": {
+      "model": "four-element square",
+      "values": [
+       "0",
+       "a",
+       "b",
+       "1"
+      ],
+      "falsified_by": {
+       "p": "b",
+       "q": "b"
+      }
+     },
+     "refutes": [
+      "K",
+      "EFQ",
+      "DNE",
+      "LEM",
+      "WLEM",
+      "LIN",
+      "PEIRCE",
+      "DIST"
+     ],
+     "similar": 1,
+     "collapse": []
+    }
+   ],
+   "count": 8
+  },
+  {
+   "outcome": "new",
+   "gained": [
+    "K",
+    "EFQ"
+   ],
+   "profile": "affine + EFQ",
+   "collapse": [],
+   "examples": [
+    {
+     "formula": "¬(p → (p → q)) → p",
+     "size": 9,
+     "floor": "linear",
+     "gained": [
+      "K",
+      "EFQ"
+     ],
+     "profile": "affine + EFQ",
+     "named": null,
+     "outcome": "new",
+     "witness": {
+      "model": "Heyting(3)",
+      "values": [
+       "0",
+       "a1",
+       "1"
+      ],
+      "falsified_by": {
+       "p": "a1",
+       "q": "0"
+      }
+     },
+     "refutes": [
+      "W",
+      "DNE",
+      "LEM",
+      "WLEM",
+      "LIN",
+      "PEIRCE",
+      "NC",
+      "DIST"
+     ],
+     "similar": 27,
+     "collapse": []
+    }
+   ],
+   "count": 1
+  },
+  {
+   "outcome": "new",
+   "gained": [
+    "W",
+    "LEM",
+    "WLEM",
+    "LIN",
+    "NC"
+   ],
+   "profile": "relevant + LEM + WLEM + LIN + NC",
+   "collapse": [],
+   "examples": [
+    {
+     "formula": "(p ∧ (q → p)) ∨ (p → q)",
+     "size": 9,
+     "floor": "linear",
+     "gained": [
+      "W",
+      "LEM",
+      "WLEM",
+      "LIN",
+      "NC"
+     ],
+     "profile": "relevant + LEM + WLEM + LIN + NC",
+     "named": null,
+     "outcome": "new",
+     "witness": {
+      "model": "Heyting(3)",
+      "values": [
+       "0",
+       "a1",
+       "1"
+      ],
+      "falsified_by": {
+       "p": "a1",
+       "q": "0"
+      }
+     },
+     "refutes": [
+      "K",
+      "EFQ",
+      "DNE",
+      "PEIRCE",
+      "DIST"
+     ],
+     "similar": 18,
+     "collapse": []
+    },
+    {
+     "formula": "(p ∧ (p → (q → p))) ∨ (p → q)",
+     "size": 11,
+     "floor": "linear",
+     "gained": [
+      "W",
+      "LEM",
+      "WLEM",
+      "LIN",
+      "NC"
+     ],
+     "profile": "relevant + LEM + WLEM + LIN + NC",
+     "named": null,
+     "outcome": "new",
+     "witness": {
+      "model": "Heyting(3)",
+      "values": [
+       "0",
+       "a1",
+       "1"
+      ],
+      "falsified_by": {
+       "p": "a1",
+       "q": "0"
+      }
+     },
+     "refutes": [
+      "K",
+      "EFQ",
+      "DNE",
+      "PEIRCE",
+      "DIST"
+     ],
+     "similar": 1,
+     "collapse": []
+    },
+    {
+     "formula": "(p ∧ (q → (q → p))) ∨ (p → q)",
+     "size": 11,
+     "floor": "linear",
+     "gained": [
+      "W",
+      "LEM",
+      "WLEM",
+      "LIN",
+      "NC"
+     ],
+     "profile": "relevant + LEM + WLEM + LIN + NC",
+     "named": null,
+     "outcome": "new",
+     "witness": {
+      "model": "Heyting(3)",
+      "values": [
+       "0",
+       "a1",
+       "1"
+      ],
+      "falsified_by": {
+       "p": "a1",
+       "q": "0"
+      }
+     },
+     "refutes": [
+      "K",
+      "EFQ",
+      "DNE",
+      "PEIRCE",
+      "DIST"
+     ],
+     "similar": 0,
+     "collapse": []
+    }
+   ],
+   "count": 3
+  },
+  {
+   "outcome": "new",
+   "gained": [
+    "W",
+    "WLEM",
+    "NC"
+   ],
+   "profile": "relevant + WLEM + NC",
+   "collapse": [],
+   "examples": [
+    {
+     "formula": "(p → q) ∨ ((p → q) → q)",
+     "size": 9,
+     "floor": "linear",
+     "gained": [
+      "W",
+      "WLEM",
+      "NC"
+     ],
+     "profile": "relevant + WLEM + NC",
+     "named": null,
+     "outcome": "new",
+     "witness": {
+      "model": "Heyting(5)",
+      "values": [
+       "0",
+       "a1",
+       "a2",
+       "a3",
+       "1"
+      ],
+      "falsified_by": {
+       "p": "a1",
+       "q": "0"
+      }
+     },
+     "refutes": [
+      "K",
+      "EFQ",
+      "DNE",
+      "LEM",
+      "LIN",
+      "PEIRCE",
+      "DIST"
+     ],
+     "similar": 15,
+     "collapse": []
+    },
+    {
+     "formula": "(p → q) ∨ ((p → q) → (p ∧ q))",
+     "size": 11,
+     "floor": "linear",
+     "gained": [
+      "W",
+      "WLEM",
+      "NC"
+     ],
+     "profile": "relevant + WLEM + NC",
+     "named": null,
+     "outcome": "new",
+     "witness": {
+      "model": "four-element square",
+      "values": [
+       "0",
+       "a",
+       "b",
+       "1"
+      ],
+      "falsified_by": {
+       "p": "a",
+       "q": "b"
+      }
+     },
+     "refutes": [
+      "K",
+      "EFQ",
+      "DNE",
+      "LEM",
+      "LIN",
+      "PEIRCE",
+      "DIST"
+     ],
+     "similar": 2,
+     "collapse": []
+    },
+    {
+     "formula": "(p → q) ∨ ((q ∨ (p → q)) → q)",
+     "size": 11,
+     "floor": "linear",
+     "gained": [
+      "W",
+      "WLEM",
+      "NC"
+     ],
+     "profile": "relevant + WLEM + NC",
+     "named": null,
+     "outcome": "new",
+     "witness": {
+      "model": "Heyting(5)",
+      "values": [
+       "0",
+       "a1",
+       "a2",
+       "a3",
+       "1"
+      ],
+      "falsified_by": {
+       "p": "a1",
+       "q": "0"
+      }
+     },
+     "refutes": [
+      "K",
+      "EFQ",
+      "DNE",
+      "LEM",
+      "LIN",
+      "PEIRCE",
+      "DIST"
+     ],
+     "similar": 2,
+     "collapse": []
+    }
+   ],
+   "count": 3
+  },
+  {
+   "outcome": "new",
+   "gained": [
+    "WLEM",
+    "NC"
+   ],
+   "profile": "linear + WLEM + NC",
+   "collapse": [],
+   "examples": [
+    {
+     "formula": "(p → q) ∨ ¬¬p",
+     "size": 9,
+     "floor": "linear",
+     "gained": [
+      "WLEM",
+      "NC"
+     ],
+     "profile": "linear + WLEM + NC",
+     "named": null,
+     "outcome": "new",
+     "witness": {
+      "model": "Heyting(3)",
+      "values": [
+       "0",
+       "a1",
+       "1"
+      ],
+      "falsified_by": {
+       "p": "a1",
+       "q": "0"
+      }
+     },
+     "refutes": [
+      "K",
+      "W",
+      "EFQ",
+      "DNE",
+      "LEM",
+      "LIN",
+      "PEIRCE",
+      "DIST"
+     ],
+     "similar": 31,
+     "collapse": []
+    },
+    {
+     "formula": "p ∨ ((p → q) ∨ ¬(p → q))",
+     "size": 11,
+     "floor": "linear",
+     "gained": [
+      "WLEM",
+      "NC"
+     ],
+     "profile": "linear + WLEM + NC",
+     "named": null,
+     "outcome": "new",
+     "witness": {
+      "model": "Heyting(4)",
+      "values": [
+       "0",
+       "a1",
+       "a2",
+       "1"
+      ],
+      "falsified_by": {
+       "p": "a2",
+       "q": "a1"
+      }
+     },
+     "refutes": [
+      "K",
+      "W",
+      "EFQ",
+      "DNE",
+      "LEM",
+      "LIN",
+      "PEIRCE",
+      "DIST"
+     ],
+     "similar": 2,
+     "collapse": []
+    },
+    {
+     "formula": "p ∨ ((p ∧ (¬q → p)) → q)",
+     "size": 11,
+     "floor": "linear",
+     "gained": [
+      "WLEM",
+      "NC"
+     ],
+     "profile": "linear + WLEM + NC",
+     "named": null,
+     "outcome": "new",
+     "witness": {
+      "model": "Heyting(3)",
+      "values": [
+       "0",
+       "a1",
+       "1"
+      ],
+      "falsified_by": {
+       "p": "a1",
+       "q": "0"
+      }
+     },
+     "refutes": [
+      "K",
+      "W",
+      "EFQ",
+      "DNE",
+      "LEM",
+      "LIN",
+      "PEIRCE",
+      "DIST"
+     ],
+     "similar": 0,
+     "collapse": []
+    }
+   ],
+   "count": 6
+  },
+  {
+   "outcome": "new",
+   "gained": [
+    "LIN"
+   ],
+   "profile": "linear + LIN",
+   "collapse": [],
+   "examples": [
+    {
+     "formula": "(p → q) ∨ ((p ∨ q) → p)",
+     "size": 9,
+     "floor": "linear",
+     "gained": [
+      "LIN"
+     ],
+     "profile": "linear + LIN",
+     "named": null,
+     "outcome": "new",
+     "witness": {
+      "model": "diamond M3 (not distributive)",
+      "values": [
+       "0",
+       "a",
+       "b",
+       "c",
+       "1"
+      ],
+      "falsified_by": {
+       "p": "a",
+       "q": "b"
+      }
+     },
+     "refutes": [
+      "K",
+      "W",
+      "EFQ",
+      "DNE",
+      "LEM",
+      "WLEM",
+      "PEIRCE",
+      "NC",
+      "DIST"
+     ],
+     "similar": 24,
+     "collapse": []
+    },
+    {
+     "formula": "(p → q) ∨ (q → (p ∧ (p → p)))",
+     "size": 11,
+     "floor": "linear",
+     "gained": [
+      "LIN"
+     ],
+     "profile": "linear + LIN",
+     "named": null,
+     "outcome": "new",
+     "witness": {
+      "model": "5-element chain",
+      "values": [
+       "0",
+       "1",
+       "2",
+       "3",
+       "4"
+      ],
+      "falsified_by": {
+       "p": "3",
+       "q": "2"
+      }
+     },
+     "refutes": [
+      "K",
+      "W",
+      "EFQ",
+      "DNE",
+      "LEM",
+      "WLEM",
+      "PEIRCE",
+      "NC",
+      "DIST"
+     ],
+     "similar": 1,
+     "collapse": []
+    },
+    {
+     "formula": "(p → q) ∨ (q → (p ∧ (q → p)))",
+     "size": 11,
+     "floor": "linear",
+     "gained": [
+      "LIN"
+     ],
+     "profile": "linear + LIN",
+     "named": null,
+     "outcome": "new",
+     "witness": {
+      "model": "5-element chain",
+      "values": [
+       "0",
+       "1",
+       "2",
+       "3",
+       "4"
+      ],
+      "falsified_by": {
+       "p": "3",
+       "q": "2"
+      }
+     },
+     "refutes": [
+      "K",
+      "W",
+      "EFQ",
+      "DNE",
+      "LEM",
+      "WLEM",
+      "PEIRCE",
+      "NC",
+      "DIST"
+     ],
+     "similar": 1,
+     "collapse": []
+    }
+   ],
+   "count": 7
+  },
+  {
+   "outcome": "new",
+   "gained": [
+    "EFQ"
+   ],
+   "profile": "linear + EFQ",
+   "collapse": [],
+   "examples": [
+    {
+     "formula": "p → ((p → p) ∧ (¬p → q))",
+     "size": 11,
+     "floor": "linear",
+     "gained": [
+      "EFQ"
+     ],
+     "profile": "linear + EFQ",
+     "named": null,
+     "outcome": "new",
+     "witness": {
+      "model": "4-element chain",
+      "values": [
+       "0",
+       "1",
+       "2",
+       "3"
+      ],
+      "falsified_by": {
+       "p": "2",
+       "q": "0"
+      }
+     },
+     "refutes": [
+      "K",
+      "W",
+      "DNE",
+      "LEM",
+      "WLEM",
+      "LIN",
+      "PEIRCE",
+      "NC",
+      "DIST"
+     ],
+     "similar": 1,
+     "collapse": []
+    },
+    {
+     "formula": "p → (¬(p ∧ (p → p)) → q)",
+     "size": 11,
+     "floor": "linear",
+     "gained": [
+      "EFQ"
+     ],
+     "profile": "linear + EFQ",
+     "named": null,
+     "outcome": "new",
+     "witness": {
+      "model": "four-element square",
+      "values": [
+       "0",
+       "a",
+       "b",
+       "1"
+      ],
+      "falsified_by": {
+       "p": "b",
+       "q": "0"
+      }
+     },
+     "refutes": [
+      "K",
+      "W",
+      "DNE",
+      "LEM",
+      "WLEM",
+      "LIN",
+      "PEIRCE",
+      "NC",
+      "DIST"
+     ],
+     "similar": 1,
+     "collapse": []
+    },
+    {
+     "formula": "p → (¬(p ∧ (q → p)) → q)",
+     "size": 11,
+     "floor": "linear",
+     "gained": [
+      "EFQ"
+     ],
+     "profile": "linear + EFQ",
+     "named": null,
+     "outcome": "new",
+     "witness": {
+      "model": "4-element chain",
+      "values": [
+       "0",
+       "1",
+       "2",
+       "3"
+      ],
+      "falsified_by": {
+       "p": "1",
+       "q": "2"
+      }
+     },
+     "refutes": [
+      "K",
+      "W",
+      "DNE",
+      "LEM",
+      "WLEM",
+      "LIN",
+      "PEIRCE",
+      "NC",
+      "DIST"
+     ],
+     "similar": 6,
+     "collapse": []
+    }
+   ],
+   "count": 7
+  },
+  {
+   "outcome": "new",
+   "gained": [
+    "K"
+   ],
+   "profile": "affine",
+   "collapse": [],
+   "examples": [
+    {
+     "formula": "p → (q ∨ (q → (q ∧ ¬q)))",
+     "size": 11,
+     "floor": "linear",
+     "gained": [
+      "K"
+     ],
+     "profile": "affine",
+     "named": null,
+     "outcome": "new",
+     "witness": {
+      "model": "Heyting(3)",
+      "values": [
+       "0",
+       "a1",
+       "1"
+      ],
+      "falsified_by": {
+       "p": "1",
+       "q": "a1"
+      }
+     },
+     "refutes": [
+      "W",
+      "EFQ",
+      "DNE",
+      "LEM",
+      "WLEM",
+      "LIN",
+      "PEIRCE",
+      "NC",
+      "DIST"
+     ],
+     "similar": 0,
+     "collapse": []
+    }
+   ],
+   "count": 1
+  },
+  {
+   "outcome": "new",
+   "gained": [
+    "EFQ",
+    "NC"
+   ],
+   "profile": "linear + EFQ + NC",
+   "collapse": [],
+   "examples": [
+    {
+     "formula": "(p ∧ ¬(p ∧ (p → p))) → q",
+     "size": 11,
+     "floor": "linear",
+     "gained": [
+      "EFQ",
+      "NC"
+     ],
+     "profile": "linear + EFQ + NC",
+     "named": null,
+     "outcome": "new",
+     "witness": {
+      "model": "four-element square",
+      "values": [
+       "0",
+       "a",
+       "b",
+       "1"
+      ],
+      "falsified_by": {
+       "p": "b",
+       "q": "0"
+      }
+     },
+     "refutes": [
+      "K",
+      "W",
+      "DNE",
+      "LEM",
+      "WLEM",
+      "LIN",
+      "PEIRCE",
+      "DIST"
+     ],
+     "similar": 0,
+     "collapse": []
+    }
+   ],
+   "count": 1
+  },
+  {
+   "outcome": "new",
+   "gained": [
+    "DNE"
+   ],
+   "profile": "linear + DNE",
+   "collapse": [],
+   "examples": [
+    {
+     "formula": "¬((p → p) ∧ ¬p) → p",
+     "size": 11,
+     "floor": "linear",
+     "gained": [
+      "DNE"
+     ],
+     "profile": "linear + DNE",
+     "named": null,
+     "outcome": "new",
+     "witness": {
+      "model": "4-element chain",
+      "values": [
+       "0",
+       "1",
+       "2",
+       "3"
+      ],
+      "falsified_by": {
+       "p": "1"
+      }
+     },
+     "refutes": [
+      "K",
+      "W",
+      "EFQ",
+      "LEM",
+      "WLEM",
+      "LIN",
+      "PEIRCE",
+      "NC",
+      "DIST"
+     ],
+     "similar": 1,
+     "collapse": []
+    }
+   ],
+   "count": 1
+  }
+ ],
+ "ms": 8230517
+}

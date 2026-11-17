@@ -1,0 +1,3303 @@
+{
+ "kind": "modal",
+ "principles": [
+  {
+   "key": "D",
+   "name": "D (seriality)",
+   "formula": "□p → ◇p",
+   "polish": "CLpMp",
+   "note": "what is necessary is possible",
+   "weakest": "S4"
+  },
+  {
+   "key": "T",
+   "name": "T (reflexivity)",
+   "formula": "□p → p",
+   "polish": "CLpp",
+   "note": "what is necessary is true",
+   "weakest": "S4"
+  },
+  {
+   "key": "B",
+   "name": "B (symmetry)",
+   "formula": "p → □◇p",
+   "polish": "CpLMp",
+   "note": "what is true is necessarily possible",
+   "weakest": "beyond S4"
+  },
+  {
+   "key": "4",
+   "name": "4 (transitivity)",
+   "formula": "□p → □□p",
+   "polish": "CLpLLp",
+   "note": "what is necessary is necessarily necessary",
+   "weakest": "S4"
+  },
+  {
+   "key": "5",
+   "name": "5 (euclidean)",
+   "formula": "◇p → □◇p",
+   "polish": "CMpLMp",
+   "note": "what is possible is necessarily possible",
+   "weakest": "beyond S4"
+  },
+  {
+   "key": "G",
+   "name": ".2 (confluence)",
+   "formula": "◇□p → □◇p",
+   "polish": "CMLpLMp",
+   "note": "if possibly necessary, then necessarily possible",
+   "weakest": "beyond S4"
+  },
+  {
+   "key": "L",
+   "name": "Löb (provability)",
+   "formula": "□(□p → p) → □p",
+   "polish": "CLCLppLp",
+   "note": "□ read as 'provable': Löb's theorem",
+   "weakest": "beyond S4"
+  }
+ ],
+ "bases": [
+  {
+   "axioms": [],
+   "name": "K",
+   "cells": {
+    "D": {
+     "status": "refuted",
+     "model": 0,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    },
+    "T": {
+     "status": "refuted",
+     "model": 0,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    },
+    "B": {
+     "status": "refuted",
+     "model": 4,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": [
+        0
+       ]
+      }
+     }
+    },
+    "4": {
+     "status": "refuted",
+     "model": 8,
+     "falsified_by": {
+      "world": 1,
+      "valuation": {
+       "p": [
+        0
+       ]
+      }
+     }
+    },
+    "5": {
+     "status": "refuted",
+     "model": 4,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": [
+        1
+       ]
+      }
+     }
+    },
+    "G": {
+     "status": "refuted",
+     "model": 4,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    },
+    "L": {
+     "status": "refuted",
+     "model": 1,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    }
+   }
+  },
+  {
+   "axioms": [
+    "D"
+   ],
+   "name": "KD",
+   "cells": {
+    "D": {
+     "status": "given"
+    },
+    "T": {
+     "status": "refuted",
+     "model": 7,
+     "falsified_by": {
+      "world": 1,
+      "valuation": {
+       "p": [
+        0
+       ]
+      }
+     }
+    },
+    "B": {
+     "status": "refuted",
+     "model": 7,
+     "falsified_by": {
+      "world": 1,
+      "valuation": {
+       "p": [
+        1
+       ]
+      }
+     }
+    },
+    "4": {
+     "status": "refuted",
+     "model": 8,
+     "falsified_by": {
+      "world": 1,
+      "valuation": {
+       "p": [
+        0
+       ]
+      }
+     }
+    },
+    "5": {
+     "status": "refuted",
+     "model": 8,
+     "falsified_by": {
+      "world": 1,
+      "valuation": {
+       "p": [
+        0
+       ]
+      }
+     }
+    },
+    "G": {
+     "status": "refuted",
+     "model": 104,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": [
+        0
+       ]
+      }
+     }
+    },
+    "L": {
+     "status": "refuted",
+     "model": 1,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    }
+   }
+  },
+  {
+   "axioms": [
+    "T"
+   ],
+   "name": "KT",
+   "cells": {
+    "D": {
+     "status": "instance",
+     "by": "K",
+     "depth": 2,
+     "instances": [
+      {
+       "of": "T",
+       "formula": "□◇p → ◇p"
+      }
+     ]
+    },
+    "T": {
+     "status": "given"
+    },
+    "B": {
+     "status": "refuted",
+     "model": 13,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": [
+        0
+       ]
+      }
+     }
+    },
+    "4": {
+     "status": "refuted",
+     "model": 303,
+     "falsified_by": {
+      "world": 1,
+      "valuation": {
+       "p": [
+        0,
+        1
+       ]
+      }
+     }
+    },
+    "5": {
+     "status": "refuted",
+     "model": 13,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": [
+        0
+       ]
+      }
+     }
+    },
+    "G": {
+     "status": "refuted",
+     "model": 297,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": [
+        1
+       ]
+      }
+     }
+    },
+    "L": {
+     "status": "refuted",
+     "model": 1,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    }
+   }
+  },
+  {
+   "axioms": [
+    "B"
+   ],
+   "name": "KB",
+   "cells": {
+    "D": {
+     "status": "refuted",
+     "model": 0,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    },
+    "T": {
+     "status": "refuted",
+     "model": 0,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    },
+    "B": {
+     "status": "given"
+    },
+    "4": {
+     "status": "refuted",
+     "model": 8,
+     "falsified_by": {
+      "world": 1,
+      "valuation": {
+       "p": [
+        0
+       ]
+      }
+     }
+    },
+    "5": {
+     "status": "refuted",
+     "model": 8,
+     "falsified_by": {
+      "world": 1,
+      "valuation": {
+       "p": [
+        0
+       ]
+      }
+     }
+    },
+    "G": {
+     "status": "instance",
+     "by": "K",
+     "depth": 3,
+     "instances": [
+      {
+       "of": "B",
+       "formula": "p → □◇p"
+      },
+      {
+       "of": "B",
+       "formula": "¬p → □◇¬p"
+      }
+     ]
+    },
+    "L": {
+     "status": "refuted",
+     "model": 1,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    }
+   }
+  },
+  {
+   "axioms": [
+    "4"
+   ],
+   "name": "K4",
+   "cells": {
+    "D": {
+     "status": "refuted",
+     "model": 0,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    },
+    "T": {
+     "status": "refuted",
+     "model": 0,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    },
+    "B": {
+     "status": "refuted",
+     "model": 4,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": [
+        0
+       ]
+      }
+     }
+    },
+    "4": {
+     "status": "given"
+    },
+    "5": {
+     "status": "refuted",
+     "model": 4,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": [
+        1
+       ]
+      }
+     }
+    },
+    "G": {
+     "status": "refuted",
+     "model": 4,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    },
+    "L": {
+     "status": "refuted",
+     "model": 1,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    }
+   }
+  },
+  {
+   "axioms": [
+    "5"
+   ],
+   "name": "K5",
+   "cells": {
+    "D": {
+     "status": "refuted",
+     "model": 0,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    },
+    "T": {
+     "status": "refuted",
+     "model": 0,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    },
+    "B": {
+     "status": "refuted",
+     "model": 7,
+     "falsified_by": {
+      "world": 1,
+      "valuation": {
+       "p": [
+        1
+       ]
+      }
+     }
+    },
+    "4": {
+     "status": "refuted",
+     "model": 109,
+     "falsified_by": {
+      "world": 2,
+      "valuation": {
+       "p": [
+        0
+       ]
+      }
+     }
+    },
+    "5": {
+     "status": "given"
+    },
+    "G": {
+     "status": "instance",
+     "by": "K",
+     "depth": 3,
+     "instances": [
+      {
+       "of": "5",
+       "formula": "◇p → □◇p"
+      },
+      {
+       "of": "5",
+       "formula": "◇¬p → □◇¬p"
+      }
+     ]
+    },
+    "L": {
+     "status": "refuted",
+     "model": 1,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    }
+   }
+  },
+  {
+   "axioms": [
+    "D",
+    "T"
+   ],
+   "name": "KDT",
+   "cells": {
+    "D": {
+     "status": "given"
+    },
+    "T": {
+     "status": "given"
+    },
+    "B": {
+     "status": "refuted",
+     "model": 13,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": [
+        0
+       ]
+      }
+     }
+    },
+    "4": {
+     "status": "refuted",
+     "model": 303,
+     "falsified_by": {
+      "world": 1,
+      "valuation": {
+       "p": [
+        0,
+        1
+       ]
+      }
+     }
+    },
+    "5": {
+     "status": "refuted",
+     "model": 13,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": [
+        0
+       ]
+      }
+     }
+    },
+    "G": {
+     "status": "refuted",
+     "model": 297,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": [
+        1
+       ]
+      }
+     }
+    },
+    "L": {
+     "status": "refuted",
+     "model": 1,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    }
+   }
+  },
+  {
+   "axioms": [
+    "D",
+    "B"
+   ],
+   "name": "KDB",
+   "cells": {
+    "D": {
+     "status": "given"
+    },
+    "T": {
+     "status": "refuted",
+     "model": 8,
+     "falsified_by": {
+      "world": 1,
+      "valuation": {
+       "p": [
+        0
+       ]
+      }
+     }
+    },
+    "B": {
+     "status": "given"
+    },
+    "4": {
+     "status": "refuted",
+     "model": 8,
+     "falsified_by": {
+      "world": 1,
+      "valuation": {
+       "p": [
+        0
+       ]
+      }
+     }
+    },
+    "5": {
+     "status": "refuted",
+     "model": 8,
+     "falsified_by": {
+      "world": 1,
+      "valuation": {
+       "p": [
+        0
+       ]
+      }
+     }
+    },
+    "G": {
+     "status": "chained",
+     "via": [
+      "B"
+     ],
+     "previously": "unknown"
+    },
+    "L": {
+     "status": "refuted",
+     "model": 1,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    }
+   }
+  },
+  {
+   "axioms": [
+    "D",
+    "4"
+   ],
+   "name": "KD4",
+   "cells": {
+    "D": {
+     "status": "given"
+    },
+    "T": {
+     "status": "refuted",
+     "model": 7,
+     "falsified_by": {
+      "world": 1,
+      "valuation": {
+       "p": [
+        0
+       ]
+      }
+     }
+    },
+    "B": {
+     "status": "refuted",
+     "model": 7,
+     "falsified_by": {
+      "world": 1,
+      "valuation": {
+       "p": [
+        1
+       ]
+      }
+     }
+    },
+    "4": {
+     "status": "given"
+    },
+    "5": {
+     "status": "refuted",
+     "model": 13,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": [
+        0
+       ]
+      }
+     }
+    },
+    "G": {
+     "status": "refuted",
+     "model": 227,
+     "falsified_by": {
+      "world": 2,
+      "valuation": {
+       "p": [
+        0
+       ]
+      }
+     }
+    },
+    "L": {
+     "status": "refuted",
+     "model": 1,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    }
+   }
+  },
+  {
+   "axioms": [
+    "D",
+    "5"
+   ],
+   "name": "KD5",
+   "cells": {
+    "D": {
+     "status": "given"
+    },
+    "T": {
+     "status": "refuted",
+     "model": 7,
+     "falsified_by": {
+      "world": 1,
+      "valuation": {
+       "p": [
+        0
+       ]
+      }
+     }
+    },
+    "B": {
+     "status": "refuted",
+     "model": 7,
+     "falsified_by": {
+      "world": 1,
+      "valuation": {
+       "p": [
+        1
+       ]
+      }
+     }
+    },
+    "4": {
+     "status": "refuted",
+     "model": 109,
+     "falsified_by": {
+      "world": 2,
+      "valuation": {
+       "p": [
+        0
+       ]
+      }
+     }
+    },
+    "5": {
+     "status": "given"
+    },
+    "G": {
+     "status": "chained",
+     "via": [
+      "5"
+     ],
+     "previously": "unknown"
+    },
+    "L": {
+     "status": "refuted",
+     "model": 1,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    }
+   }
+  },
+  {
+   "axioms": [
+    "T",
+    "B"
+   ],
+   "name": "KTB",
+   "cells": {
+    "D": {
+     "status": "chained",
+     "via": [
+      "T"
+     ],
+     "previously": "unknown"
+    },
+    "T": {
+     "status": "given"
+    },
+    "B": {
+     "status": "given"
+    },
+    "4": {
+     "status": "refuted",
+     "model": 369,
+     "falsified_by": {
+      "world": 1,
+      "valuation": {
+       "p": [
+        0,
+        1
+       ]
+      }
+     }
+    },
+    "5": {
+     "status": "refuted",
+     "model": 369,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": [
+        1
+       ]
+      }
+     }
+    },
+    "G": {
+     "status": "chained",
+     "via": [
+      "B"
+     ],
+     "previously": "unknown"
+    },
+    "L": {
+     "status": "refuted",
+     "model": 1,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    }
+   }
+  },
+  {
+   "axioms": [
+    "T",
+    "4"
+   ],
+   "name": "S4",
+   "cells": {
+    "D": {
+     "status": "decided",
+     "by": "S4"
+    },
+    "T": {
+     "status": "given"
+    },
+    "B": {
+     "status": "refuted",
+     "model": 13,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": [
+        0
+       ]
+      }
+     }
+    },
+    "4": {
+     "status": "given"
+    },
+    "5": {
+     "status": "refuted",
+     "model": 13,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": [
+        0
+       ]
+      }
+     }
+    },
+    "G": {
+     "status": "refuted",
+     "model": 297,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": [
+        1
+       ]
+      }
+     }
+    },
+    "L": {
+     "status": "refuted",
+     "model": 1,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    }
+   }
+  },
+  {
+   "axioms": [
+    "T",
+    "5"
+   ],
+   "name": "S5",
+   "cells": {
+    "D": {
+     "status": "decided",
+     "by": "S5"
+    },
+    "T": {
+     "status": "given"
+    },
+    "B": {
+     "status": "decided",
+     "by": "S5"
+    },
+    "4": {
+     "status": "decided",
+     "by": "S5"
+    },
+    "5": {
+     "status": "given"
+    },
+    "G": {
+     "status": "decided",
+     "by": "S5"
+    },
+    "L": {
+     "status": "refuted",
+     "model": 1,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    }
+   }
+  },
+  {
+   "axioms": [
+    "B",
+    "4"
+   ],
+   "name": "KB4",
+   "cells": {
+    "D": {
+     "status": "refuted",
+     "model": 0,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    },
+    "T": {
+     "status": "refuted",
+     "model": 0,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    },
+    "B": {
+     "status": "given"
+    },
+    "4": {
+     "status": "given"
+    },
+    "5": {
+     "status": "instance",
+     "by": "K",
+     "depth": 3,
+     "instances": [
+      {
+       "of": "B",
+       "formula": "◇p → □◇◇p"
+      },
+      {
+       "of": "4",
+       "formula": "□¬p → □□¬p"
+      }
+     ]
+    },
+    "G": {
+     "status": "chained",
+     "via": [
+      "B"
+     ],
+     "previously": "unknown"
+    },
+    "L": {
+     "status": "refuted",
+     "model": 1,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    }
+   }
+  },
+  {
+   "axioms": [
+    "B",
+    "5"
+   ],
+   "name": "KB5",
+   "cells": {
+    "D": {
+     "status": "refuted",
+     "model": 0,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    },
+    "T": {
+     "status": "refuted",
+     "model": 0,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    },
+    "B": {
+     "status": "given"
+    },
+    "4": {
+     "status": "instance",
+     "by": "K",
+     "depth": 3,
+     "instances": [
+      {
+       "of": "B",
+       "formula": "□p → □◇□p"
+      },
+      {
+       "of": "5",
+       "formula": "◇¬p → □◇¬p"
+      }
+     ]
+    },
+    "5": {
+     "status": "given"
+    },
+    "G": {
+     "status": "chained",
+     "via": [
+      "B"
+     ],
+     "previously": "unknown"
+    },
+    "L": {
+     "status": "refuted",
+     "model": 1,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    }
+   }
+  },
+  {
+   "axioms": [
+    "4",
+    "5"
+   ],
+   "name": "K45",
+   "cells": {
+    "D": {
+     "status": "refuted",
+     "model": 0,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    },
+    "T": {
+     "status": "refuted",
+     "model": 0,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    },
+    "B": {
+     "status": "refuted",
+     "model": 7,
+     "falsified_by": {
+      "world": 1,
+      "valuation": {
+       "p": [
+        1
+       ]
+      }
+     }
+    },
+    "4": {
+     "status": "given"
+    },
+    "5": {
+     "status": "given"
+    },
+    "G": {
+     "status": "chained",
+     "via": [
+      "5"
+     ],
+     "previously": "unknown"
+    },
+    "L": {
+     "status": "refuted",
+     "model": 1,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    }
+   }
+  },
+  {
+   "axioms": [
+    "D",
+    "T",
+    "B"
+   ],
+   "name": "KDTB",
+   "cells": {
+    "D": {
+     "status": "given"
+    },
+    "T": {
+     "status": "given"
+    },
+    "B": {
+     "status": "given"
+    },
+    "4": {
+     "status": "refuted",
+     "model": 369,
+     "falsified_by": {
+      "world": 1,
+      "valuation": {
+       "p": [
+        0,
+        1
+       ]
+      }
+     }
+    },
+    "5": {
+     "status": "refuted",
+     "model": 369,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": [
+        1
+       ]
+      }
+     }
+    },
+    "G": {
+     "status": "chained",
+     "via": [
+      "B"
+     ],
+     "previously": "unknown"
+    },
+    "L": {
+     "status": "refuted",
+     "model": 1,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    }
+   }
+  },
+  {
+   "axioms": [
+    "D",
+    "T",
+    "4"
+   ],
+   "name": "KDT4",
+   "cells": {
+    "D": {
+     "status": "given"
+    },
+    "T": {
+     "status": "given"
+    },
+    "B": {
+     "status": "refuted",
+     "model": 13,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": [
+        0
+       ]
+      }
+     }
+    },
+    "4": {
+     "status": "given"
+    },
+    "5": {
+     "status": "refuted",
+     "model": 13,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": [
+        0
+       ]
+      }
+     }
+    },
+    "G": {
+     "status": "refuted",
+     "model": 297,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": [
+        1
+       ]
+      }
+     }
+    },
+    "L": {
+     "status": "refuted",
+     "model": 1,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    }
+   }
+  },
+  {
+   "axioms": [
+    "D",
+    "T",
+    "5"
+   ],
+   "name": "KDT5",
+   "cells": {
+    "D": {
+     "status": "given"
+    },
+    "T": {
+     "status": "given"
+    },
+    "B": {
+     "status": "decided",
+     "by": "S5"
+    },
+    "4": {
+     "status": "decided",
+     "by": "S5"
+    },
+    "5": {
+     "status": "given"
+    },
+    "G": {
+     "status": "decided",
+     "by": "S5"
+    },
+    "L": {
+     "status": "refuted",
+     "model": 1,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    }
+   }
+  },
+  {
+   "axioms": [
+    "D",
+    "B",
+    "4"
+   ],
+   "name": "KDB4",
+   "cells": {
+    "D": {
+     "status": "given"
+    },
+    "T": {
+     "status": "instance",
+     "by": "K",
+     "depth": 2,
+     "instances": [
+      {
+       "of": "D",
+       "formula": "□p → ◇p"
+      },
+      {
+       "of": "B",
+       "formula": "¬p → □◇¬p"
+      },
+      {
+       "of": "4",
+       "formula": "□p → □□p"
+      }
+     ]
+    },
+    "B": {
+     "status": "given"
+    },
+    "4": {
+     "status": "given"
+    },
+    "5": {
+     "status": "chained",
+     "via": [
+      "B",
+      "4"
+     ],
+     "previously": "unknown"
+    },
+    "G": {
+     "status": "chained",
+     "via": [
+      "B"
+     ],
+     "previously": "unknown"
+    },
+    "L": {
+     "status": "refuted",
+     "model": 1,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    }
+   }
+  },
+  {
+   "axioms": [
+    "D",
+    "B",
+    "5"
+   ],
+   "name": "KDB5",
+   "cells": {
+    "D": {
+     "status": "given"
+    },
+    "T": {
+     "status": "chained",
+     "via": [
+      "D",
+      "B",
+      "4"
+     ],
+     "previously": "unknown"
+    },
+    "B": {
+     "status": "given"
+    },
+    "4": {
+     "status": "chained",
+     "via": [
+      "B",
+      "5"
+     ],
+     "previously": "unknown"
+    },
+    "5": {
+     "status": "given"
+    },
+    "G": {
+     "status": "chained",
+     "via": [
+      "B"
+     ],
+     "previously": "unknown"
+    },
+    "L": {
+     "status": "refuted",
+     "model": 1,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    }
+   }
+  },
+  {
+   "axioms": [
+    "D",
+    "4",
+    "5"
+   ],
+   "name": "KD45",
+   "cells": {
+    "D": {
+     "status": "given"
+    },
+    "T": {
+     "status": "refuted",
+     "model": 7,
+     "falsified_by": {
+      "world": 1,
+      "valuation": {
+       "p": [
+        0
+       ]
+      }
+     }
+    },
+    "B": {
+     "status": "refuted",
+     "model": 7,
+     "falsified_by": {
+      "world": 1,
+      "valuation": {
+       "p": [
+        1
+       ]
+      }
+     }
+    },
+    "4": {
+     "status": "given"
+    },
+    "5": {
+     "status": "given"
+    },
+    "G": {
+     "status": "chained",
+     "via": [
+      "5"
+     ],
+     "previously": "unknown"
+    },
+    "L": {
+     "status": "refuted",
+     "model": 1,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    }
+   }
+  },
+  {
+   "axioms": [
+    "T",
+    "B",
+    "4"
+   ],
+   "name": "KTB4",
+   "cells": {
+    "D": {
+     "status": "decided",
+     "by": "S4"
+    },
+    "T": {
+     "status": "given"
+    },
+    "B": {
+     "status": "given"
+    },
+    "4": {
+     "status": "given"
+    },
+    "5": {
+     "status": "chained",
+     "via": [
+      "B",
+      "4"
+     ],
+     "previously": "unknown"
+    },
+    "G": {
+     "status": "chained",
+     "via": [
+      "B"
+     ],
+     "previously": "unknown"
+    },
+    "L": {
+     "status": "refuted",
+     "model": 1,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    }
+   }
+  },
+  {
+   "axioms": [
+    "T",
+    "B",
+    "5"
+   ],
+   "name": "KTB5",
+   "cells": {
+    "D": {
+     "status": "decided",
+     "by": "S5"
+    },
+    "T": {
+     "status": "given"
+    },
+    "B": {
+     "status": "given"
+    },
+    "4": {
+     "status": "decided",
+     "by": "S5"
+    },
+    "5": {
+     "status": "given"
+    },
+    "G": {
+     "status": "decided",
+     "by": "S5"
+    },
+    "L": {
+     "status": "refuted",
+     "model": 1,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    }
+   }
+  },
+  {
+   "axioms": [
+    "T",
+    "4",
+    "5"
+   ],
+   "name": "KT45",
+   "cells": {
+    "D": {
+     "status": "decided",
+     "by": "S5"
+    },
+    "T": {
+     "status": "given"
+    },
+    "B": {
+     "status": "decided",
+     "by": "S5"
+    },
+    "4": {
+     "status": "given"
+    },
+    "5": {
+     "status": "given"
+    },
+    "G": {
+     "status": "decided",
+     "by": "S5"
+    },
+    "L": {
+     "status": "refuted",
+     "model": 1,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    }
+   }
+  },
+  {
+   "axioms": [
+    "B",
+    "4",
+    "5"
+   ],
+   "name": "KB45",
+   "cells": {
+    "D": {
+     "status": "refuted",
+     "model": 0,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    },
+    "T": {
+     "status": "refuted",
+     "model": 0,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    },
+    "B": {
+     "status": "given"
+    },
+    "4": {
+     "status": "given"
+    },
+    "5": {
+     "status": "given"
+    },
+    "G": {
+     "status": "chained",
+     "via": [
+      "B"
+     ],
+     "previously": "unknown"
+    },
+    "L": {
+     "status": "refuted",
+     "model": 1,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    }
+   }
+  },
+  {
+   "axioms": [
+    "D",
+    "T",
+    "B",
+    "4"
+   ],
+   "name": "KDTB4",
+   "cells": {
+    "D": {
+     "status": "given"
+    },
+    "T": {
+     "status": "given"
+    },
+    "B": {
+     "status": "given"
+    },
+    "4": {
+     "status": "given"
+    },
+    "5": {
+     "status": "chained",
+     "via": [
+      "B",
+      "4"
+     ],
+     "previously": "unknown"
+    },
+    "G": {
+     "status": "chained",
+     "via": [
+      "B"
+     ],
+     "previously": "unknown"
+    },
+    "L": {
+     "status": "refuted",
+     "model": 1,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    }
+   }
+  },
+  {
+   "axioms": [
+    "D",
+    "T",
+    "B",
+    "5"
+   ],
+   "name": "KDTB5",
+   "cells": {
+    "D": {
+     "status": "given"
+    },
+    "T": {
+     "status": "given"
+    },
+    "B": {
+     "status": "given"
+    },
+    "4": {
+     "status": "decided",
+     "by": "S5"
+    },
+    "5": {
+     "status": "given"
+    },
+    "G": {
+     "status": "decided",
+     "by": "S5"
+    },
+    "L": {
+     "status": "refuted",
+     "model": 1,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    }
+   }
+  },
+  {
+   "axioms": [
+    "D",
+    "T",
+    "4",
+    "5"
+   ],
+   "name": "KDT45",
+   "cells": {
+    "D": {
+     "status": "given"
+    },
+    "T": {
+     "status": "given"
+    },
+    "B": {
+     "status": "decided",
+     "by": "S5"
+    },
+    "4": {
+     "status": "given"
+    },
+    "5": {
+     "status": "given"
+    },
+    "G": {
+     "status": "decided",
+     "by": "S5"
+    },
+    "L": {
+     "status": "refuted",
+     "model": 1,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    }
+   }
+  },
+  {
+   "axioms": [
+    "D",
+    "B",
+    "4",
+    "5"
+   ],
+   "name": "KDB45",
+   "cells": {
+    "D": {
+     "status": "given"
+    },
+    "T": {
+     "status": "chained",
+     "via": [
+      "D",
+      "B",
+      "4"
+     ],
+     "previously": "unknown"
+    },
+    "B": {
+     "status": "given"
+    },
+    "4": {
+     "status": "given"
+    },
+    "5": {
+     "status": "given"
+    },
+    "G": {
+     "status": "chained",
+     "via": [
+      "B"
+     ],
+     "previously": "unknown"
+    },
+    "L": {
+     "status": "refuted",
+     "model": 1,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    }
+   }
+  },
+  {
+   "axioms": [
+    "T",
+    "B",
+    "4",
+    "5"
+   ],
+   "name": "KTB45",
+   "cells": {
+    "D": {
+     "status": "decided",
+     "by": "S5"
+    },
+    "T": {
+     "status": "given"
+    },
+    "B": {
+     "status": "given"
+    },
+    "4": {
+     "status": "given"
+    },
+    "5": {
+     "status": "given"
+    },
+    "G": {
+     "status": "decided",
+     "by": "S5"
+    },
+    "L": {
+     "status": "refuted",
+     "model": 1,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    }
+   }
+  },
+  {
+   "axioms": [
+    "D",
+    "T",
+    "B",
+    "4",
+    "5"
+   ],
+   "name": "KDTB45",
+   "cells": {
+    "D": {
+     "status": "given"
+    },
+    "T": {
+     "status": "given"
+    },
+    "B": {
+     "status": "given"
+    },
+    "4": {
+     "status": "given"
+    },
+    "5": {
+     "status": "given"
+    },
+    "G": {
+     "status": "decided",
+     "by": "S5"
+    },
+    "L": {
+     "status": "refuted",
+     "model": 1,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    }
+   }
+  },
+  {
+   "axioms": [
+    "G"
+   ],
+   "name": "K.2",
+   "cells": {
+    "D": {
+     "status": "refuted",
+     "model": 0,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    },
+    "T": {
+     "status": "refuted",
+     "model": 0,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    },
+    "B": {
+     "status": "refuted",
+     "model": 7,
+     "falsified_by": {
+      "world": 1,
+      "valuation": {
+       "p": [
+        1
+       ]
+      }
+     }
+    },
+    "4": {
+     "status": "refuted",
+     "model": 8,
+     "falsified_by": {
+      "world": 1,
+      "valuation": {
+       "p": [
+        0
+       ]
+      }
+     }
+    },
+    "5": {
+     "status": "refuted",
+     "model": 8,
+     "falsified_by": {
+      "world": 1,
+      "valuation": {
+       "p": [
+        0
+       ]
+      }
+     }
+    },
+    "G": {
+     "status": "given"
+    },
+    "L": {
+     "status": "refuted",
+     "model": 1,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    }
+   }
+  },
+  {
+   "axioms": [
+    "T",
+    "4",
+    "G"
+   ],
+   "name": "S4.2",
+   "cells": {
+    "D": {
+     "status": "decided",
+     "by": "S4"
+    },
+    "T": {
+     "status": "given"
+    },
+    "B": {
+     "status": "refuted",
+     "model": 13,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": [
+        0
+       ]
+      }
+     }
+    },
+    "4": {
+     "status": "given"
+    },
+    "5": {
+     "status": "refuted",
+     "model": 13,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": [
+        0
+       ]
+      }
+     }
+    },
+    "G": {
+     "status": "given"
+    },
+    "L": {
+     "status": "refuted",
+     "model": 1,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    }
+   }
+  },
+  {
+   "axioms": [
+    "L"
+   ],
+   "name": "GL",
+   "cells": {
+    "D": {
+     "status": "refuted",
+     "model": 0,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    },
+    "T": {
+     "status": "refuted",
+     "model": 0,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    },
+    "B": {
+     "status": "refuted",
+     "model": 4,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": [
+        0
+       ]
+      }
+     }
+    },
+    "4": {
+     "status": "instance",
+     "by": "K",
+     "depth": 3,
+     "instances": [
+      {
+       "of": "L",
+       "formula": "□(□(p ∧ □p) → (p ∧ □p)) → □(p ∧ □p)"
+      }
+     ]
+    },
+    "5": {
+     "status": "refuted",
+     "model": 4,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": [
+        1
+       ]
+      }
+     }
+    },
+    "G": {
+     "status": "refuted",
+     "model": 4,
+     "falsified_by": {
+      "world": 0,
+      "valuation": {
+       "p": []
+      }
+     }
+    },
+    "L": {
+     "status": "given"
+    }
+   }
+  }
+ ],
+ "nodes": [
+  {
+   "bases": [
+    []
+   ],
+   "rep": [],
+   "proves": [],
+   "refutes": [
+    "4",
+    "5",
+    "B",
+    "D",
+    "G",
+    "L",
+    "T"
+   ],
+   "unknown": [],
+   "names": [
+    "K"
+   ]
+  },
+  {
+   "bases": [
+    [
+     "D"
+    ]
+   ],
+   "rep": [
+    "D"
+   ],
+   "proves": [
+    "D"
+   ],
+   "refutes": [
+    "4",
+    "5",
+    "B",
+    "G",
+    "L",
+    "T"
+   ],
+   "unknown": [],
+   "names": [
+    "KD"
+   ]
+  },
+  {
+   "bases": [
+    [
+     "T"
+    ],
+    [
+     "D",
+     "T"
+    ]
+   ],
+   "rep": [
+    "T"
+   ],
+   "proves": [
+    "D",
+    "T"
+   ],
+   "refutes": [
+    "4",
+    "5",
+    "B",
+    "G",
+    "L"
+   ],
+   "unknown": [],
+   "names": [
+    "KT",
+    "KDT"
+   ]
+  },
+  {
+   "bases": [
+    [
+     "B"
+    ]
+   ],
+   "rep": [
+    "B"
+   ],
+   "proves": [
+    "B",
+    "G"
+   ],
+   "refutes": [
+    "4",
+    "5",
+    "D",
+    "L",
+    "T"
+   ],
+   "unknown": [],
+   "names": [
+    "KB"
+   ]
+  },
+  {
+   "bases": [
+    [
+     "4"
+    ]
+   ],
+   "rep": [
+    "4"
+   ],
+   "proves": [
+    "4"
+   ],
+   "refutes": [
+    "5",
+    "B",
+    "D",
+    "G",
+    "L",
+    "T"
+   ],
+   "unknown": [],
+   "names": [
+    "K4"
+   ]
+  },
+  {
+   "bases": [
+    [
+     "5"
+    ]
+   ],
+   "rep": [
+    "5"
+   ],
+   "proves": [
+    "5",
+    "G"
+   ],
+   "refutes": [
+    "4",
+    "B",
+    "D",
+    "L",
+    "T"
+   ],
+   "unknown": [],
+   "names": [
+    "K5"
+   ]
+  },
+  {
+   "bases": [
+    [
+     "D",
+     "B"
+    ]
+   ],
+   "rep": [
+    "D",
+    "B"
+   ],
+   "proves": [
+    "B",
+    "D",
+    "G"
+   ],
+   "refutes": [
+    "4",
+    "5",
+    "L",
+    "T"
+   ],
+   "unknown": [],
+   "names": [
+    "KDB"
+   ]
+  },
+  {
+   "bases": [
+    [
+     "D",
+     "4"
+    ]
+   ],
+   "rep": [
+    "D",
+    "4"
+   ],
+   "proves": [
+    "4",
+    "D"
+   ],
+   "refutes": [
+    "5",
+    "B",
+    "G",
+    "L",
+    "T"
+   ],
+   "unknown": [],
+   "names": [
+    "KD4"
+   ]
+  },
+  {
+   "bases": [
+    [
+     "D",
+     "5"
+    ]
+   ],
+   "rep": [
+    "D",
+    "5"
+   ],
+   "proves": [
+    "5",
+    "D",
+    "G"
+   ],
+   "refutes": [
+    "4",
+    "B",
+    "L",
+    "T"
+   ],
+   "unknown": [],
+   "names": [
+    "KD5"
+   ]
+  },
+  {
+   "bases": [
+    [
+     "T",
+     "B"
+    ],
+    [
+     "D",
+     "T",
+     "B"
+    ]
+   ],
+   "rep": [
+    "T",
+    "B"
+   ],
+   "proves": [
+    "B",
+    "D",
+    "G",
+    "T"
+   ],
+   "refutes": [
+    "4",
+    "5",
+    "L"
+   ],
+   "unknown": [],
+   "names": [
+    "KTB",
+    "KDTB"
+   ]
+  },
+  {
+   "bases": [
+    [
+     "T",
+     "4"
+    ],
+    [
+     "D",
+     "T",
+     "4"
+    ]
+   ],
+   "rep": [
+    "T",
+    "4"
+   ],
+   "proves": [
+    "4",
+    "D",
+    "T"
+   ],
+   "refutes": [
+    "5",
+    "B",
+    "G",
+    "L"
+   ],
+   "unknown": [],
+   "names": [
+    "S4",
+    "KDT4"
+   ]
+  },
+  {
+   "bases": [
+    [
+     "T",
+     "5"
+    ],
+    [
+     "D",
+     "T",
+     "5"
+    ],
+    [
+     "D",
+     "B",
+     "4"
+    ],
+    [
+     "D",
+     "B",
+     "5"
+    ],
+    [
+     "T",
+     "B",
+     "4"
+    ],
+    [
+     "T",
+     "B",
+     "5"
+    ],
+    [
+     "T",
+     "4",
+     "5"
+    ],
+    [
+     "D",
+     "T",
+     "B",
+     "4"
+    ],
+    [
+     "D",
+     "T",
+     "B",
+     "5"
+    ],
+    [
+     "D",
+     "T",
+     "4",
+     "5"
+    ],
+    [
+     "D",
+     "B",
+     "4",
+     "5"
+    ],
+    [
+     "T",
+     "B",
+     "4",
+     "5"
+    ],
+    [
+     "D",
+     "T",
+     "B",
+     "4",
+     "5"
+    ]
+   ],
+   "rep": [
+    "T",
+    "5"
+   ],
+   "proves": [
+    "4",
+    "5",
+    "B",
+    "D",
+    "G",
+    "T"
+   ],
+   "refutes": [
+    "L"
+   ],
+   "unknown": [],
+   "names": [
+    "S5",
+    "KDT5",
+    "KDB4",
+    "KDB5",
+    "KTB4",
+    "KTB5",
+    "KT45",
+    "KDTB4",
+    "KDTB5",
+    "KDT45",
+    "KDB45",
+    "KTB45",
+    "KDTB45"
+   ]
+  },
+  {
+   "bases": [
+    [
+     "B",
+     "4"
+    ],
+    [
+     "B",
+     "5"
+    ],
+    [
+     "B",
+     "4",
+     "5"
+    ]
+   ],
+   "rep": [
+    "B",
+    "4"
+   ],
+   "proves": [
+    "4",
+    "5",
+    "B",
+    "G"
+   ],
+   "refutes": [
+    "D",
+    "L",
+    "T"
+   ],
+   "unknown": [],
+   "names": [
+    "KB4",
+    "KB5",
+    "KB45"
+   ]
+  },
+  {
+   "bases": [
+    [
+     "4",
+     "5"
+    ]
+   ],
+   "rep": [
+    "4",
+    "5"
+   ],
+   "proves": [
+    "4",
+    "5",
+    "G"
+   ],
+   "refutes": [
+    "B",
+    "D",
+    "L",
+    "T"
+   ],
+   "unknown": [],
+   "names": [
+    "K45"
+   ]
+  },
+  {
+   "bases": [
+    [
+     "D",
+     "4",
+     "5"
+    ]
+   ],
+   "rep": [
+    "D",
+    "4",
+    "5"
+   ],
+   "proves": [
+    "4",
+    "5",
+    "D",
+    "G"
+   ],
+   "refutes": [
+    "B",
+    "L",
+    "T"
+   ],
+   "unknown": [],
+   "names": [
+    "KD45"
+   ]
+  },
+  {
+   "bases": [
+    [
+     "G"
+    ]
+   ],
+   "rep": [
+    "G"
+   ],
+   "proves": [
+    "G"
+   ],
+   "refutes": [
+    "4",
+    "5",
+    "B",
+    "D",
+    "L",
+    "T"
+   ],
+   "unknown": [],
+   "names": [
+    "K.2"
+   ]
+  },
+  {
+   "bases": [
+    [
+     "T",
+     "4",
+     "G"
+    ]
+   ],
+   "rep": [
+    "T",
+    "4",
+    "G"
+   ],
+   "proves": [
+    "4",
+    "D",
+    "G",
+    "T"
+   ],
+   "refutes": [
+    "5",
+    "B",
+    "L"
+   ],
+   "unknown": [],
+   "names": [
+    "S4.2"
+   ]
+  },
+  {
+   "bases": [
+    [
+     "L"
+    ]
+   ],
+   "rep": [
+    "L"
+   ],
+   "proves": [
+    "4",
+    "L"
+   ],
+   "refutes": [
+    "5",
+    "B",
+    "D",
+    "G",
+    "T"
+   ],
+   "unknown": [],
+   "names": [
+    "GL"
+   ]
+  }
+ ],
+ "edges": [
+  {
+   "from": 0,
+   "to": 1,
+   "adds": [
+    "D"
+   ],
+   "strict_by": "D",
+   "model": 0
+  },
+  {
+   "from": 0,
+   "to": 4,
+   "adds": [
+    "4"
+   ],
+   "strict_by": "4",
+   "model": 8
+  },
+  {
+   "from": 0,
+   "to": 15,
+   "adds": [
+    "G"
+   ],
+   "strict_by": "G",
+   "model": 4
+  },
+  {
+   "from": 1,
+   "to": 2,
+   "adds": [
+    "T"
+   ],
+   "strict_by": "T",
+   "model": 7
+  },
+  {
+   "from": 1,
+   "to": 6,
+   "adds": [
+    "B"
+   ],
+   "strict_by": "B",
+   "model": 7
+  },
+  {
+   "from": 1,
+   "to": 7,
+   "adds": [
+    "4"
+   ],
+   "strict_by": "4",
+   "model": 8
+  },
+  {
+   "from": 1,
+   "to": 8,
+   "adds": [
+    "5"
+   ],
+   "strict_by": "5",
+   "model": 8
+  },
+  {
+   "from": 2,
+   "to": 9,
+   "adds": [
+    "B"
+   ],
+   "strict_by": "B",
+   "model": 13
+  },
+  {
+   "from": 2,
+   "to": 10,
+   "adds": [
+    "4"
+   ],
+   "strict_by": "4",
+   "model": 303
+  },
+  {
+   "from": 3,
+   "to": 6,
+   "adds": [
+    "D"
+   ],
+   "strict_by": "D",
+   "model": 0
+  },
+  {
+   "from": 3,
+   "to": 12,
+   "adds": [
+    "4"
+   ],
+   "strict_by": "4",
+   "model": 8
+  },
+  {
+   "from": 4,
+   "to": 7,
+   "adds": [
+    "D"
+   ],
+   "strict_by": "D",
+   "model": 0
+  },
+  {
+   "from": 4,
+   "to": 13,
+   "adds": [
+    "5"
+   ],
+   "strict_by": "5",
+   "model": 4
+  },
+  {
+   "from": 4,
+   "to": 17,
+   "adds": [
+    "L"
+   ],
+   "strict_by": "L",
+   "model": 1
+  },
+  {
+   "from": 5,
+   "to": 8,
+   "adds": [
+    "D"
+   ],
+   "strict_by": "D",
+   "model": 0
+  },
+  {
+   "from": 5,
+   "to": 13,
+   "adds": [
+    "4"
+   ],
+   "strict_by": "4",
+   "model": 109
+  },
+  {
+   "from": 6,
+   "to": 9,
+   "adds": [
+    "T"
+   ],
+   "strict_by": "T",
+   "model": 8
+  },
+  {
+   "from": 7,
+   "to": 10,
+   "adds": [
+    "T"
+   ],
+   "strict_by": "T",
+   "model": 7
+  },
+  {
+   "from": 7,
+   "to": 14,
+   "adds": [
+    "5"
+   ],
+   "strict_by": "5",
+   "model": 13
+  },
+  {
+   "from": 8,
+   "to": 14,
+   "adds": [
+    "4"
+   ],
+   "strict_by": "4",
+   "model": 109
+  },
+  {
+   "from": 9,
+   "to": 11,
+   "adds": [
+    "5"
+   ],
+   "strict_by": "4",
+   "model": 369
+  },
+  {
+   "from": 10,
+   "to": 16,
+   "adds": [
+    "G"
+   ],
+   "strict_by": "G",
+   "model": 297
+  },
+  {
+   "from": 12,
+   "to": 11,
+   "adds": [
+    "T"
+   ],
+   "strict_by": "D",
+   "model": 0
+  },
+  {
+   "from": 13,
+   "to": 12,
+   "adds": [
+    "B"
+   ],
+   "strict_by": "B",
+   "model": 7
+  },
+  {
+   "from": 13,
+   "to": 14,
+   "adds": [
+    "D"
+   ],
+   "strict_by": "D",
+   "model": 0
+  },
+  {
+   "from": 14,
+   "to": 11,
+   "adds": [
+    "T"
+   ],
+   "strict_by": "B",
+   "model": 7
+  },
+  {
+   "from": 15,
+   "to": 3,
+   "adds": [
+    "B"
+   ],
+   "strict_by": "B",
+   "model": 7
+  },
+  {
+   "from": 15,
+   "to": 5,
+   "adds": [
+    "5"
+   ],
+   "strict_by": "5",
+   "model": 8
+  },
+  {
+   "from": 15,
+   "to": 16,
+   "adds": [
+    "4",
+    "T"
+   ],
+   "strict_by": "4",
+   "model": 8
+  },
+  {
+   "from": 16,
+   "to": 11,
+   "adds": [
+    "5"
+   ],
+   "strict_by": "5",
+   "model": 13
+  }
+ ],
+ "models": {
+  "0": {
+   "worlds": 1,
+   "arrows": []
+  },
+  "1": {
+   "worlds": 1,
+   "arrows": [
+    [
+     0,
+     0
+    ]
+   ]
+  },
+  "4": {
+   "worlds": 2,
+   "arrows": [
+    [
+     0,
+     1
+    ]
+   ]
+  },
+  "7": {
+   "worlds": 2,
+   "arrows": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ]
+   ]
+  },
+  "8": {
+   "worlds": 2,
+   "arrows": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     0
+    ]
+   ]
+  },
+  "13": {
+   "worlds": 2,
+   "arrows": [
+    [
+     0,
+     0
+    ],
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ]
+  },
+  "104": {
+   "worlds": 3,
+   "arrows": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     0
+    ]
+   ]
+  },
+  "109": {
+   "worlds": 3,
+   "arrows": [
+    [
+     0,
+     0
+    ],
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     0
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     0
+    ]
+   ]
+  },
+  "227": {
+   "worlds": 3,
+   "arrows": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     0
+    ],
+    [
+     2,
+     1
+    ]
+   ]
+  },
+  "297": {
+   "worlds": 3,
+   "arrows": [
+    [
+     0,
+     0
+    ],
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     2
+    ]
+   ]
+  },
+  "303": {
+   "worlds": 3,
+   "arrows": [
+    [
+     0,
+     0
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     1,
+     0
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     2
+    ]
+   ]
+  },
+  "369": {
+   "worlds": 3,
+   "arrows": [
+    [
+     0,
+     0
+    ],
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     1,
+     0
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     0
+    ],
+    [
+     2,
+     2
+    ]
+   ]
+  }
+ },
+ "bridge": {
+  "sample": 761,
+  "per_logic": 300,
+  "timeout_seconds": 10,
+  "s4_agree": 654,
+  "s4_disagree": 0,
+  "s4_timeout": 107,
+  "s5_ok": 425,
+  "s5_fail": 0,
+  "s5_skipped": 336,
+  "disagreements": [],
+  "examples": [
+   {
+    "name": "double-negation elimination",
+    "formula": "¬¬p → p",
+    "translation": "□(□◇□p → □p)",
+    "S4": false,
+    "S5": true
+   },
+   {
+    "name": "Peirce's law",
+    "formula": "((p → q) → p) → p",
+    "translation": "□(□(□(□p → □q) → □p) → □p)",
+    "S4": false,
+    "S5": true
+   },
+   {
+    "name": "explosion",
+    "formula": "¬p → (p → q)",
+    "translation": "□(□¬□p → □(□p → □q))",
+    "S4": true,
+    "S5": true
+   },
+   {
+    "name": "ax-1",
+    "formula": "p → (q → p)",
+    "translation": "□(□p → □(□q → □p))",
+    "S4": true,
+    "S5": true
+   }
+  ]
+ }
+}

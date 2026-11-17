@@ -1,0 +1,1295 @@
+{
+ "floor": "minimal",
+ "vars": 2,
+ "maxOps": 5,
+ "candidates": 11738,
+ "classes": 624,
+ "examined": 624,
+ "unsettled": 50,
+ "findings": [
+  {
+   "outcome": "equivalent",
+   "gained": [
+    "EFQ"
+   ],
+   "profile": "intuitionistic",
+   "collapse": [
+    "EFQ"
+   ],
+   "examples": [
+    {
+     "formula": "(p ∧ ¬p) → q",
+     "size": 7,
+     "floor": "minimal",
+     "gained": [
+      "EFQ"
+     ],
+     "profile": "intuitionistic + NC + DIST",
+     "named": null,
+     "outcome": "equivalent",
+     "collapse": [
+      "EFQ"
+     ],
+     "how": {
+      "EFQ": [
+       "(⊥ ∧ ¬⊥) → p"
+      ],
+      "NC": "decided",
+      "DIST": "decided"
+     },
+     "similar": 197
+    },
+    {
+     "formula": "¬(p → p) → p",
+     "size": 7,
+     "floor": "minimal",
+     "gained": [
+      "EFQ"
+     ],
+     "profile": "intuitionistic + NC + DIST",
+     "named": null,
+     "outcome": "equivalent",
+     "collapse": [
+      "EFQ"
+     ],
+     "how": {
+      "EFQ": [
+       "¬(p → p) → p"
+      ],
+      "NC": "decided",
+      "DIST": "decided"
+     },
+     "similar": 260
+    },
+    {
+     "formula": "p → (¬p → q)",
+     "size": 7,
+     "floor": "minimal",
+     "gained": [
+      "EFQ"
+     ],
+     "profile": "intuitionistic + NC + DIST",
+     "named": null,
+     "outcome": "equivalent",
+     "collapse": [
+      "EFQ"
+     ],
+     "how": {
+      "EFQ": [
+       "⊥ → (¬⊥ → p)"
+      ],
+      "NC": "decided",
+      "DIST": "decided"
+     },
+     "similar": 756
+    }
+   ],
+   "count": 131
+  },
+  {
+   "outcome": "equivalent",
+   "gained": [
+    "EFQ",
+    "DNE",
+    "LEM",
+    "WLEM",
+    "LIN",
+    "PEIRCE"
+   ],
+   "profile": "intuitionistic + DNE + LEM + WLEM + LIN + PEIRCE",
+   "collapse": [
+    "EFQ"
+   ],
+   "examples": [
+    {
+     "formula": "¬(p → q) → p",
+     "size": 7,
+     "floor": "minimal",
+     "gained": [
+      "EFQ",
+      "DNE",
+      "LEM",
+      "WLEM",
+      "LIN",
+      "PEIRCE"
+     ],
+     "profile": "intuitionistic + DNE + LEM + WLEM + LIN + PEIRCE + NC + DIST",
+     "named": null,
+     "outcome": "equivalent",
+     "collapse": [
+      "EFQ"
+     ],
+     "how": {
+      "EFQ": [
+       "¬(p → p) → p"
+      ],
+      "DNE": [
+       "¬¬p → p"
+      ],
+      "LEM": [
+       "¬(p → p) → p"
+      ],
+      "WLEM": [
+       "¬(p → p) → p"
+      ],
+      "LIN": [
+       "¬(p → p) → p"
+      ],
+      "PEIRCE": [
+       "¬(p → p) → p"
+      ],
+      "NC": "decided",
+      "DIST": "decided"
+     },
+     "similar": 308
+    },
+    {
+     "formula": "¬(p → (p → q)) → p",
+     "size": 9,
+     "floor": "minimal",
+     "gained": [
+      "EFQ",
+      "DNE",
+      "LEM",
+      "WLEM",
+      "LIN",
+      "PEIRCE"
+     ],
+     "profile": "intuitionistic + DNE + LEM + WLEM + LIN + PEIRCE + NC + DIST",
+     "named": null,
+     "outcome": "equivalent",
+     "collapse": [
+      "EFQ"
+     ],
+     "how": {
+      "EFQ": [
+       "¬(p → (p → p)) → p"
+      ],
+      "DNE": [
+       "¬(p → ¬p) → p"
+      ],
+      "LEM": [
+       "¬(p → (p → p)) → p"
+      ],
+      "WLEM": [
+       "¬(p → (p → p)) → p"
+      ],
+      "LIN": [
+       "¬(p → (p → p)) → p"
+      ],
+      "PEIRCE": [
+       "¬(p → (p → p)) → p"
+      ],
+      "NC": "decided",
+      "DIST": "decided"
+     },
+     "similar": 27
+    },
+    {
+     "formula": "¬(p → ¬p) → p",
+     "size": 9,
+     "floor": "minimal",
+     "gained": [
+      "EFQ",
+      "DNE",
+      "LEM",
+      "WLEM",
+      "LIN",
+      "PEIRCE"
+     ],
+     "profile": "intuitionistic + DNE + LEM + WLEM + LIN + PEIRCE + NC + DIST",
+     "named": null,
+     "outcome": "equivalent",
+     "collapse": [
+      "EFQ"
+     ],
+     "how": {
+      "EFQ": [
+       "¬(p → ¬p) → p"
+      ],
+      "DNE": [
+       "¬(p → ¬p) → p"
+      ],
+      "LEM": [
+       "¬(p → ¬p) → p"
+      ],
+      "WLEM": [
+       "¬(p → ¬p) → p"
+      ],
+      "LIN": [
+       "¬(p → ¬p) → p"
+      ],
+      "PEIRCE": [
+       "¬(p → ¬p) → p"
+      ],
+      "NC": "decided",
+      "DIST": "decided"
+     },
+     "similar": 20
+    }
+   ],
+   "count": 29
+  },
+  {
+   "outcome": "equivalent",
+   "gained": [
+    "EFQ",
+    "WLEM"
+   ],
+   "profile": "Jankov",
+   "collapse": [
+    "EFQ"
+   ],
+   "examples": [
+    {
+     "formula": "(p → q) ∨ (¬p → q)",
+     "size": 9,
+     "floor": "minimal",
+     "gained": [
+      "EFQ",
+      "WLEM"
+     ],
+     "profile": "intuitionistic + WLEM + NC + DIST",
+     "named": null,
+     "outcome": "equivalent",
+     "collapse": [
+      "EFQ"
+     ],
+     "how": {
+      "EFQ": [
+       "(⊥ → p) ∨ (¬⊥ → p)"
+      ],
+      "WLEM": [
+       "¬p ∨ ¬¬p"
+      ],
+      "NC": "decided",
+      "DIST": "decided"
+     },
+     "similar": 18
+    },
+    {
+     "formula": "(p → (p → q)) ∨ (¬p → q)",
+     "size": 11,
+     "floor": "minimal",
+     "gained": [
+      "EFQ",
+      "WLEM"
+     ],
+     "profile": "intuitionistic + WLEM + NC + DIST",
+     "named": null,
+     "outcome": "equivalent",
+     "collapse": [
+      "EFQ"
+     ],
+     "how": {
+      "EFQ": [
+       "(⊥ → (⊥ → p)) ∨ (¬⊥ → p)"
+      ],
+      "WLEM": [
+       "(p → ¬p) ∨ ¬¬p"
+      ],
+      "NC": "decided",
+      "DIST": "decided"
+     },
+     "similar": 0
+    },
+    {
+     "formula": "(p → q) ∨ ((q ∨ ¬p) → q)",
+     "size": 11,
+     "floor": "minimal",
+     "gained": [
+      "EFQ",
+      "WLEM"
+     ],
+     "profile": "intuitionistic + WLEM + NC + DIST",
+     "named": null,
+     "outcome": "equivalent",
+     "collapse": [
+      "EFQ"
+     ],
+     "how": {
+      "EFQ": [
+       "(⊥ → p) ∨ ((p ∨ ¬⊥) → p)"
+      ],
+      "WLEM": [
+       "¬p ∨ ¬(⊥ ∨ ¬p)"
+      ],
+      "NC": "decided",
+      "DIST": "decided"
+     },
+     "similar": 2
+    }
+   ],
+   "count": 3
+  },
+  {
+   "outcome": "equivalent",
+   "gained": [
+    "LEM",
+    "WLEM",
+    "LIN",
+    "PEIRCE"
+   ],
+   "profile": "minimal + LEM + WLEM + LIN + PEIRCE",
+   "collapse": [],
+   "examples": [
+    {
+     "formula": "p ∨ (p → q)",
+     "size": 5,
+     "floor": "minimal",
+     "gained": [
+      "LEM",
+      "WLEM",
+      "LIN",
+      "PEIRCE"
+     ],
+     "profile": "minimal + LEM + WLEM + LIN + PEIRCE + NC + DIST",
+     "named": null,
+     "outcome": "equivalent",
+     "collapse": [],
+     "how": {
+      "LEM": [
+       "p ∨ ¬p"
+      ],
+      "WLEM": [
+       "p ∨ ¬p"
+      ],
+      "LIN": [
+       "p ∨ (p → q)"
+      ],
+      "PEIRCE": [
+       "p ∨ (p → q)"
+      ],
+      "NC": "decided",
+      "DIST": "decided"
+     },
+     "similar": 2258
+    },
+    {
+     "formula": "p ∨ ((p ∨ q) → q)",
+     "size": 7,
+     "floor": "minimal",
+     "gained": [
+      "LEM",
+      "WLEM",
+      "LIN",
+      "PEIRCE"
+     ],
+     "profile": "minimal + LEM + WLEM + LIN + PEIRCE + NC + DIST",
+     "named": null,
+     "outcome": "equivalent",
+     "collapse": [],
+     "how": {
+      "LEM": [
+       "p ∨ ¬(p ∨ ⊥)"
+      ],
+      "WLEM": [
+       "p ∨ ¬(p ∨ ⊥)"
+      ],
+      "LIN": [
+       "p ∨ ((p ∨ q) → q)"
+      ],
+      "PEIRCE": [
+       "p ∨ ((p ∨ q) → q)"
+      ],
+      "NC": "decided",
+      "DIST": "decided"
+     },
+     "similar": 229
+    },
+    {
+     "formula": "p ∨ (p → (p → q))",
+     "size": 7,
+     "floor": "minimal",
+     "gained": [
+      "LEM",
+      "WLEM",
+      "LIN",
+      "PEIRCE"
+     ],
+     "profile": "minimal + LEM + WLEM + LIN + PEIRCE + NC + DIST",
+     "named": null,
+     "outcome": "equivalent",
+     "collapse": [],
+     "how": {
+      "LEM": [
+       "p ∨ (p → ¬p)"
+      ],
+      "WLEM": [
+       "p ∨ (p → ¬p)"
+      ],
+      "LIN": [
+       "p ∨ (p → (p → q))"
+      ],
+      "PEIRCE": [
+       "p ∨ (p → (p → q))"
+      ],
+      "NC": "decided",
+      "DIST": "decided"
+     },
+     "similar": 275
+    }
+   ],
+   "count": 91
+  },
+  {
+   "outcome": "equivalent",
+   "gained": [
+    "LEM",
+    "WLEM"
+   ],
+   "profile": "minimal + LEM + WLEM",
+   "collapse": [],
+   "examples": [
+    {
+     "formula": "(¬p → p) → p",
+     "size": 7,
+     "floor": "minimal",
+     "gained": [
+      "LEM",
+      "WLEM"
+     ],
+     "profile": "minimal + LEM + WLEM + NC + DIST",
+     "named": null,
+     "outcome": "equivalent",
+     "collapse": [],
+     "how": {
+      "LEM": [
+       "(¬(p ∨ ¬p) → (p ∨ ¬p)) → (p ∨ ¬p)"
+      ],
+      "WLEM": [
+       "(¬(¬p ∨ ¬¬p) → (¬p ∨ ¬¬p)) → (¬p ∨ ¬¬p)"
+      ],
+      "NC": "decided",
+      "DIST": "decided"
+     },
+     "similar": 254
+    },
+    {
+     "formula": "p ∨ (p → ¬p)",
+     "size": 7,
+     "floor": "minimal",
+     "gained": [
+      "LEM",
+      "WLEM"
+     ],
+     "profile": "minimal + LEM + WLEM + NC + DIST",
+     "named": null,
+     "outcome": "equivalent",
+     "collapse": [],
+     "how": {
+      "LEM": [
+       "p ∨ (p → ¬p)"
+      ],
+      "WLEM": [
+       "p ∨ (p → ¬p)"
+      ],
+      "NC": "decided",
+      "DIST": "decided"
+     },
+     "similar": 294
+    },
+    {
+     "formula": "p ∨ (p → ¬q)",
+     "size": 7,
+     "floor": "minimal",
+     "gained": [
+      "LEM",
+      "WLEM"
+     ],
+     "profile": "minimal + LEM + WLEM + NC + DIST",
+     "named": null,
+     "outcome": "equivalent",
+     "collapse": [],
+     "how": {
+      "LEM": [
+       "p ∨ (p → ¬p)"
+      ],
+      "WLEM": [
+       "p ∨ (p → ¬p)"
+      ],
+      "NC": "decided",
+      "DIST": "decided"
+     },
+     "similar": 536
+    }
+   ],
+   "count": 139
+  },
+  {
+   "outcome": "equivalent",
+   "gained": [
+    "WLEM",
+    "LIN"
+   ],
+   "profile": "minimal + WLEM + LIN",
+   "collapse": [],
+   "examples": [
+    {
+     "formula": "(p → q) ∨ (q → (p ∧ q))",
+     "size": 9,
+     "floor": "minimal",
+     "gained": [
+      "WLEM",
+      "LIN"
+     ],
+     "profile": "minimal + WLEM + LIN + NC + DIST",
+     "named": null,
+     "outcome": "equivalent",
+     "collapse": [],
+     "how": {
+      "WLEM": [
+       "(p → ¬p) ∨ (¬p → (p ∧ ¬p))"
+      ],
+      "LIN": [
+       "(p → q) ∨ (q → (p ∧ q))"
+      ],
+      "NC": "decided",
+      "DIST": "decided"
+     },
+     "similar": 30
+    },
+    {
+     "formula": "(p → q) ∨ (q → (q → p))",
+     "size": 9,
+     "floor": "minimal",
+     "gained": [
+      "WLEM",
+      "LIN"
+     ],
+     "profile": "minimal + WLEM + LIN + NC + DIST",
+     "named": null,
+     "outcome": "equivalent",
+     "collapse": [],
+     "how": {
+      "WLEM": [
+       "(p → ¬p) ∨ (¬p → (¬p → p))"
+      ],
+      "LIN": [
+       "(p → q) ∨ (q → (q → p))"
+      ],
+      "NC": "decided",
+      "DIST": "decided"
+     },
+     "similar": 17
+    },
+    {
+     "formula": "p ∨ ((p → q) ∨ (q → p))",
+     "size": 9,
+     "floor": "minimal",
+     "gained": [
+      "WLEM",
+      "LIN"
+     ],
+     "profile": "minimal + WLEM + LIN + NC + DIST",
+     "named": null,
+     "outcome": "equivalent",
+     "collapse": [],
+     "how": {
+      "WLEM": [
+       "p ∨ ((p → ¬p) ∨ (¬p → p))"
+      ],
+      "LIN": [
+       "p ∨ ((p → q) ∨ (q → p))"
+      ],
+      "NC": "decided",
+      "DIST": "decided"
+     },
+     "similar": 52
+    }
+   ],
+   "count": 38
+  },
+  {
+   "outcome": "equivalent",
+   "gained": [
+    "LEM",
+    "WLEM",
+    "LIN"
+   ],
+   "profile": "minimal + LEM + WLEM + LIN",
+   "collapse": [],
+   "examples": [
+    {
+     "formula": "((p → q) ∧ ¬p) ∨ (q → p)",
+     "size": 11,
+     "floor": "minimal",
+     "gained": [
+      "LEM",
+      "WLEM",
+      "LIN"
+     ],
+     "profile": "minimal + LEM + WLEM + LIN + NC + DIST",
+     "named": null,
+     "outcome": "equivalent",
+     "collapse": [],
+     "how": {
+      "LEM": [
+       "((p → ¬p) ∧ ¬p) ∨ (¬p → p)",
+       "((p → ¬¬p) ∧ ¬p) ∨ (¬¬p → p)"
+      ],
+      "WLEM": [
+       "((p → ¬p) ∧ ¬p) ∨ (¬p → p)"
+      ],
+      "LIN": [
+       "((p → q) ∧ ¬p) ∨ (q → p)"
+      ],
+      "NC": "decided",
+      "DIST": "decided"
+     },
+     "similar": 0
+    },
+    {
+     "formula": "(p → q) ∨ (q → (p ∧ ¬p))",
+     "size": 11,
+     "floor": "minimal",
+     "gained": [
+      "LEM",
+      "WLEM",
+      "LIN"
+     ],
+     "profile": "minimal + LEM + WLEM + LIN + NC + DIST",
+     "named": null,
+     "outcome": "equivalent",
+     "collapse": [],
+     "how": {
+      "LEM": [
+       "(p → ¬p) ∨ (¬p → (p ∧ ¬p))",
+       "(¬¬p → p) ∨ (p → (¬¬p ∧ ¬¬¬p))"
+      ],
+      "WLEM": [
+       "(p → ¬p) ∨ (¬p → (p ∧ ¬p))"
+      ],
+      "LIN": [
+       "(p → q) ∨ (q → (p ∧ ¬p))"
+      ],
+      "NC": "decided",
+      "DIST": "decided"
+     },
+     "similar": 1
+    },
+    {
+     "formula": "(p → q) ∨ (q → (p ∧ ¬q))",
+     "size": 11,
+     "floor": "minimal",
+     "gained": [
+      "LEM",
+      "WLEM",
+      "LIN"
+     ],
+     "profile": "minimal + LEM + WLEM + LIN + NC + DIST",
+     "named": null,
+     "outcome": "equivalent",
+     "collapse": [],
+     "how": {
+      "LEM": [
+       "(p → ¬p) ∨ (¬p → (p ∧ ¬¬p))",
+       "(¬¬p → p) ∨ (p → (¬¬p ∧ ¬p))"
+      ],
+      "WLEM": [
+       "(p → ¬p) ∨ (¬p → (p ∧ ¬¬p))"
+      ],
+      "LIN": [
+       "(p → q) ∨ (q → (p ∧ ¬q))"
+      ],
+      "NC": "decided",
+      "DIST": "decided"
+     },
+     "similar": 1
+    }
+   ],
+   "count": 4
+  },
+  {
+   "outcome": "equivalent",
+   "gained": [
+    "WLEM"
+   ],
+   "profile": "minimal + WLEM",
+   "collapse": [],
+   "examples": [
+    {
+     "formula": "(p → ¬p) ∨ ¬¬p",
+     "size": 11,
+     "floor": "minimal",
+     "gained": [
+      "WLEM"
+     ],
+     "profile": "minimal + WLEM + NC + DIST",
+     "named": null,
+     "outcome": "equivalent",
+     "collapse": [],
+     "how": {
+      "WLEM": [
+       "(p → ¬p) ∨ ¬¬p"
+      ],
+      "NC": "decided",
+      "DIST": "decided"
+     },
+     "similar": 0
+    },
+    {
+     "formula": "(p → ¬q) ∨ ¬¬p",
+     "size": 11,
+     "floor": "minimal",
+     "gained": [
+      "WLEM"
+     ],
+     "profile": "minimal + WLEM + NC + DIST",
+     "named": null,
+     "outcome": "equivalent",
+     "collapse": [],
+     "how": {
+      "WLEM": [
+       "(p → ¬p) ∨ ¬¬p"
+      ],
+      "NC": "decided",
+      "DIST": "decided"
+     },
+     "similar": 4
+    },
+    {
+     "formula": "¬p ∨ ¬(p → ¬p)",
+     "size": 11,
+     "floor": "minimal",
+     "gained": [
+      "WLEM"
+     ],
+     "profile": "minimal + WLEM + NC + DIST",
+     "named": null,
+     "outcome": "equivalent",
+     "collapse": [],
+     "how": {
+      "WLEM": [
+       "¬p ∨ ¬(p → ¬p)"
+      ],
+      "NC": "decided",
+      "DIST": "decided"
+     },
+     "similar": 0
+    }
+   ],
+   "count": 4
+  },
+  {
+   "outcome": "new",
+   "gained": [],
+   "profile": "minimal",
+   "collapse": [],
+   "examples": [
+    {
+     "formula": "¬¬(p ∨ (p → q))",
+     "size": 9,
+     "floor": "minimal",
+     "gained": [],
+     "profile": "minimal + NC + DIST",
+     "named": null,
+     "outcome": "new",
+     "witness": {
+      "model": "Heyting(3)",
+      "values": [
+       "0",
+       "a1",
+       "1"
+      ],
+      "falsified_by": {
+       "p": "a1",
+       "q": "0"
+      }
+     },
+     "refutes": [
+      "EFQ",
+      "DNE",
+      "LEM",
+      "WLEM",
+      "LIN",
+      "PEIRCE"
+     ],
+     "similar": 18,
+     "collapse": []
+    },
+    {
+     "formula": "¬p → (p ∨ (p → q))",
+     "size": 9,
+     "floor": "minimal",
+     "gained": [],
+     "profile": "minimal + NC + DIST",
+     "named": null,
+     "outcome": "new",
+     "witness": {
+      "model": "Heyting(3)",
+      "values": [
+       "0",
+       "a1",
+       "1"
+      ],
+      "falsified_by": {
+       "p": "a1",
+       "q": "0"
+      }
+     },
+     "refutes": [
+      "EFQ",
+      "DNE",
+      "LEM",
+      "WLEM",
+      "LIN",
+      "PEIRCE"
+     ],
+     "similar": 19,
+     "collapse": []
+    },
+    {
+     "formula": "p ∨ (p → (¬p → q))",
+     "size": 9,
+     "floor": "minimal",
+     "gained": [],
+     "profile": "minimal + NC + DIST",
+     "named": null,
+     "outcome": "new",
+     "witness": {
+      "model": "Heyting(3)",
+      "values": [
+       "0",
+       "a1",
+       "1"
+      ],
+      "falsified_by": {
+       "p": "a1",
+       "q": "0"
+      }
+     },
+     "refutes": [
+      "EFQ",
+      "DNE",
+      "LEM",
+      "WLEM",
+      "LIN",
+      "PEIRCE"
+     ],
+     "similar": 38,
+     "collapse": []
+    }
+   ],
+   "count": 74
+  },
+  {
+   "outcome": "new",
+   "gained": [
+    "LEM",
+    "WLEM"
+   ],
+   "profile": "minimal + LEM + WLEM",
+   "collapse": [],
+   "examples": [
+    {
+     "formula": "p ∨ ¬((p → q) → p)",
+     "size": 9,
+     "floor": "minimal",
+     "gained": [
+      "LEM",
+      "WLEM"
+     ],
+     "profile": "minimal + LEM + WLEM + NC + DIST",
+     "named": null,
+     "outcome": "new",
+     "witness": {
+      "model": "Heyting(3)",
+      "values": [
+       "0",
+       "a1",
+       "1"
+      ],
+      "falsified_by": {
+       "p": "a1",
+       "q": "0"
+      }
+     },
+     "refutes": [
+      "EFQ",
+      "DNE",
+      "LIN",
+      "PEIRCE"
+     ],
+     "similar": 42,
+     "collapse": []
+    },
+    {
+     "formula": "(¬((p → q) → p) → p) → p",
+     "size": 11,
+     "floor": "minimal",
+     "gained": [
+      "LEM",
+      "WLEM"
+     ],
+     "profile": "minimal + LEM + WLEM + NC + DIST",
+     "named": null,
+     "outcome": "new",
+     "witness": {
+      "model": "Heyting(3)",
+      "values": [
+       "0",
+       "a1",
+       "1"
+      ],
+      "falsified_by": {
+       "p": "a1",
+       "q": "0"
+      }
+     },
+     "refutes": [
+      "EFQ",
+      "DNE",
+      "LIN",
+      "PEIRCE"
+     ],
+     "similar": 1,
+     "collapse": []
+    },
+    {
+     "formula": "¬¬p → (p ∨ (p → q))",
+     "size": 11,
+     "floor": "minimal",
+     "gained": [
+      "LEM",
+      "WLEM"
+     ],
+     "profile": "minimal + LEM + WLEM + NC + DIST",
+     "named": null,
+     "outcome": "new",
+     "witness": {
+      "model": "Heyting(3)",
+      "values": [
+       "0",
+       "a1",
+       "1"
+      ],
+      "falsified_by": {
+       "p": "a1",
+       "q": "0"
+      }
+     },
+     "refutes": [
+      "EFQ",
+      "DNE",
+      "LIN",
+      "PEIRCE"
+     ],
+     "similar": 0,
+     "collapse": []
+    }
+   ],
+   "count": 11
+  },
+  {
+   "outcome": "new",
+   "gained": [
+    "WLEM"
+   ],
+   "profile": "minimal + WLEM",
+   "collapse": [],
+   "examples": [
+    {
+     "formula": "(p → q) ∨ (¬p → p)",
+     "size": 9,
+     "floor": "minimal",
+     "gained": [
+      "WLEM"
+     ],
+     "profile": "minimal + WLEM + NC + DIST",
+     "named": null,
+     "outcome": "new",
+     "witness": {
+      "model": "Heyting(3)",
+      "values": [
+       "0",
+       "a1",
+       "1"
+      ],
+      "falsified_by": {
+       "p": "a1",
+       "q": "0"
+      }
+     },
+     "refutes": [
+      "EFQ",
+      "DNE",
+      "LEM",
+      "LIN",
+      "PEIRCE"
+     ],
+     "similar": 18,
+     "collapse": []
+    },
+    {
+     "formula": "(p → q) ∨ ¬¬p",
+     "size": 9,
+     "floor": "minimal",
+     "gained": [
+      "WLEM"
+     ],
+     "profile": "minimal + WLEM + NC + DIST",
+     "named": null,
+     "outcome": "new",
+     "witness": {
+      "model": "Heyting(3)",
+      "values": [
+       "0",
+       "a1",
+       "1"
+      ],
+      "falsified_by": {
+       "p": "a1",
+       "q": "0"
+      }
+     },
+     "refutes": [
+      "EFQ",
+      "DNE",
+      "LEM",
+      "LIN",
+      "PEIRCE"
+     ],
+     "similar": 31,
+     "collapse": []
+    },
+    {
+     "formula": "p ∨ ((p → q) ∨ ¬q)",
+     "size": 9,
+     "floor": "minimal",
+     "gained": [
+      "WLEM"
+     ],
+     "profile": "minimal + WLEM + NC + DIST",
+     "named": null,
+     "outcome": "new",
+     "witness": {
+      "model": "Heyting(4)",
+      "values": [
+       "0",
+       "a1",
+       "a2",
+       "1"
+      ],
+      "falsified_by": {
+       "p": "a2",
+       "q": "a1"
+      }
+     },
+     "refutes": [
+      "EFQ",
+      "DNE",
+      "LEM",
+      "LIN",
+      "PEIRCE"
+     ],
+     "similar": 39,
+     "collapse": []
+    }
+   ],
+   "count": 40
+  },
+  {
+   "outcome": "new",
+   "gained": [
+    "LEM",
+    "WLEM",
+    "LIN"
+   ],
+   "profile": "minimal + LEM + WLEM + LIN",
+   "collapse": [],
+   "examples": [
+    {
+     "formula": "(p → q) ∨ (¬¬p → p)",
+     "size": 11,
+     "floor": "minimal",
+     "gained": [
+      "LEM",
+      "WLEM",
+      "LIN"
+     ],
+     "profile": "minimal + LEM + WLEM + LIN + NC + DIST",
+     "named": null,
+     "outcome": "new",
+     "witness": {
+      "model": "Heyting(3)",
+      "values": [
+       "0",
+       "a1",
+       "1"
+      ],
+      "falsified_by": {
+       "p": "a1",
+       "q": "0"
+      }
+     },
+     "refutes": [
+      "EFQ",
+      "DNE",
+      "PEIRCE"
+     ],
+     "similar": 0,
+     "collapse": []
+    }
+   ],
+   "count": 1
+  },
+  {
+   "outcome": "new",
+   "gained": [
+    "EFQ"
+   ],
+   "profile": "intuitionistic",
+   "collapse": [],
+   "examples": [
+    {
+     "formula": "(p → q) ∨ (¬(q → p) → q)",
+     "size": 11,
+     "floor": "minimal",
+     "gained": [
+      "EFQ"
+     ],
+     "profile": "intuitionistic + NC + DIST",
+     "named": null,
+     "outcome": "new",
+     "witness": {
+      "model": "Heyting(7)",
+      "values": [
+       "0",
+       "a1",
+       "a2",
+       "a3",
+       "a4",
+       "a5",
+       "1"
+      ],
+      "falsified_by": {
+       "p": "a2",
+       "q": "a1"
+      }
+     },
+     "refutes": [
+      "DNE",
+      "LEM",
+      "WLEM",
+      "LIN",
+      "PEIRCE"
+     ],
+     "similar": 0,
+     "collapse": []
+    }
+   ],
+   "count": 1
+  },
+  {
+   "outcome": "new",
+   "gained": [
+    "WLEM",
+    "LIN"
+   ],
+   "profile": "minimal + WLEM + LIN",
+   "collapse": [],
+   "examples": [
+    {
+     "formula": "(p → q) ∨ ((¬q → q) → p)",
+     "size": 11,
+     "floor": "minimal",
+     "gained": [
+      "WLEM",
+      "LIN"
+     ],
+     "profile": "minimal + WLEM + LIN + NC + DIST",
+     "named": null,
+     "outcome": "new",
+     "witness": {
+      "model": "Heyting(4)",
+      "values": [
+       "0",
+       "a1",
+       "a2",
+       "1"
+      ],
+      "falsified_by": {
+       "p": "a2",
+       "q": "a1"
+      }
+     },
+     "refutes": [
+      "EFQ",
+      "DNE",
+      "LEM",
+      "PEIRCE"
+     ],
+     "similar": 0,
+     "collapse": []
+    },
+    {
+     "formula": "(p → q) ∨ ((q ∨ ¬p) → p)",
+     "size": 11,
+     "floor": "minimal",
+     "gained": [
+      "WLEM",
+      "LIN"
+     ],
+     "profile": "minimal + WLEM + LIN + NC + DIST",
+     "named": null,
+     "outcome": "new",
+     "witness": {
+      "model": "Heyting(3)",
+      "values": [
+       "0",
+       "a1",
+       "1"
+      ],
+      "falsified_by": {
+       "p": "a1",
+       "q": "0"
+      }
+     },
+     "refutes": [
+      "EFQ",
+      "DNE",
+      "LEM",
+      "PEIRCE"
+     ],
+     "similar": 0,
+     "collapse": []
+    },
+    {
+     "formula": "(p → q) ∨ (¬¬q → p)",
+     "size": 11,
+     "floor": "minimal",
+     "gained": [
+      "WLEM",
+      "LIN"
+     ],
+     "profile": "minimal + WLEM + LIN + NC + DIST",
+     "named": null,
+     "outcome": "new",
+     "witness": {
+      "model": "Heyting(3)",
+      "values": [
+       "0",
+       "a1",
+       "1"
+      ],
+      "falsified_by": {
+       "p": "a1",
+       "q": "0"
+      }
+     },
+     "refutes": [
+      "EFQ",
+      "DNE",
+      "LEM",
+      "PEIRCE"
+     ],
+     "similar": 0,
+     "collapse": []
+    }
+   ],
+   "count": 3
+  }
+ ],
+ "ms": 930435
+}

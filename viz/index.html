@@ -1,0 +1,630 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Logic Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Style after The Pudding: deep aubergine ground, white ink, serif for prose,
+   grotesque sans for interface, typewriter mono for pills. */
+:root {
+  --ground: #13051d;
+  --ink: #ffffff;
+  --ash: #a7a7a7;
+  --dim: #6a636f;
+  --edge: #787878;
+  --mauve: #372c3f;
+  --yellow: #ffe021;
+  --magenta: #f368ff;
+  --lavender: #e6bfff;
+  --serif: "Tiempos Text", "Iowan Old Style", "Source Serif 4", "Times New Roman", Times, serif;
+  --sans: "Atlas Grotesk", Inter, -apple-system, system-ui, Helvetica, Arial, sans-serif;
+  --mono: "Atlas Typewriter", "IBM Plex Mono", Menlo, Consolas, Monaco, monospace;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body { background: var(--ground); color: var(--ink); font: 16px/1.4 var(--sans); overflow: hidden; }
+button, input, select { font: inherit; color: inherit; }
+
+/* top */
+header { position: absolute; top: 0; left: 0; right: 0; display: flex; align-items: center; gap: 14px; padding: 20px 28px; z-index: 4; pointer-events: none; flex-wrap: wrap; }
+header > * { pointer-events: auto; }
+h1 { font: 500 26px/1.1 var(--serif); margin: 0 auto 0 0; letter-spacing: -0.01em; }
+.switch { display: flex; gap: 6px; }
+.pill { background: var(--ground); border: 1px solid var(--ash); border-radius: 32px; padding: 7px 14px; font: 14px var(--mono); color: var(--ink); cursor: pointer; white-space: nowrap; }
+.pill:hover { border-color: var(--ink); }
+.pill.on { background: var(--ink); color: #111; border-color: var(--ink); }
+select.pill { appearance: none; -webkit-appearance: none; padding-right: 30px; background-image: linear-gradient(45deg, transparent 50%, var(--ink) 50%), linear-gradient(135deg, var(--ink) 50%, transparent 50%); background-position: calc(100% - 17px) 52%, calc(100% - 12px) 52%; background-size: 5px 5px; background-repeat: no-repeat; }
+select.pill option { background: var(--ground); color: var(--ink); }
+
+/* graph */
+#stage { position: absolute; inset: 0; cursor: grab; touch-action: none; }
+#stage.dragging { cursor: grabbing; }
+#graph { width: 100%; height: 100%; display: block; }
+.edge { fill: none; stroke: var(--edge); stroke-width: 1; opacity: .55; vector-effect: non-scaling-stroke; }
+.edge.up { stroke: var(--ink); stroke-width: 2; opacity: 1; }
+.edge.hit { stroke: transparent; stroke-width: 12; opacity: 1; cursor: pointer; }
+.edge.sel { stroke: var(--yellow); opacity: 1; stroke-width: 2.5; }
+.elabel { font: 12px var(--mono); fill: var(--ink); paint-order: stroke; stroke: var(--ground); stroke-width: 4px; cursor: pointer; }
+.node { cursor: pointer; }
+.node .dot { fill: #bbb; }
+.node .lab { font: 14px var(--sans); fill: var(--ash); paint-order: stroke; stroke: var(--ground); stroke-width: 4px; }
+.node:hover .lab, .node.next .lab { fill: var(--ink); }
+.node.next .dot { fill: var(--ink); }
+.node.here .dot { fill: var(--ink); }
+.node.here .halo { fill: var(--ink); opacity: .18; }
+.node.here .lab { fill: var(--ink); font-weight: 600; font-size: 16px; }
+.node.mark .lab { fill: #d9d9d9; }
+.node.prev .lab { fill: var(--ash); }
+.node.odd .lab { font-style: italic; }
+
+/* caption + assumptions dock */
+.dock { position: absolute; left: 50%; bottom: 26px; transform: translateX(-50%); width: min(760px, calc(100% - 32px)); text-align: center; z-index: 4; }
+.caption { font: 18px/1.45 var(--sans); margin: 0 0 4px; }
+.caption b { font-weight: 600; }
+.subcap { font: 15px/1.45 var(--serif); color: var(--ash); margin: 0 0 14px; min-height: 1em; }
+.subcap .baked { color: var(--lavender); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.chip { display: inline-flex; align-items: center; gap: 8px; }
+.chip.baked { border-style: dashed; color: var(--lavender); border-color: var(--lavender); }
+.chip .x { opacity: .55; font-size: 15px; line-height: 1; }
+.chip.rule { color: var(--ash); }
+.chip.rule.baked { color: var(--lavender); }
+.chips .sep { width: 1px; align-self: stretch; background: var(--mauve); margin: 4px 4px; }
+.chip:hover .x { opacity: 1; }
+.add { background: var(--ink); color: #111; border: 0; border-radius: 8px; padding: 8px 16px; font: 15px var(--sans); cursor: pointer; }
+.add:hover { background: var(--yellow); }
+
+/* add popover */
+.pop { position: absolute; left: 50%; bottom: 100%; transform: translateX(-50%); margin-bottom: 14px; width: min(560px, calc(100vw - 32px)); background: var(--ground); border: 1px solid var(--ash); border-radius: 14px; padding: 16px; text-align: left; display: none; box-shadow: 0 20px 60px rgba(0,0,0,.5); }
+.pop.on { display: block; }
+.pop h3 { font: 500 13px var(--sans); color: var(--ash); margin: 0 0 10px; }
+.opts { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.opt { display: inline-flex; gap: 8px; align-items: baseline; }
+.opt .to { font-family: var(--sans); font-size: 13px; color: var(--ash); }
+.opt:hover .to { color: var(--ink); }
+.opt.same { opacity: .45; }
+.typed { display: flex; gap: 8px; }
+.typed input { flex: 1; min-width: 0; background: transparent; border: 1px solid var(--ash); border-radius: 32px; padding: 8px 14px; font: 14px var(--mono); }
+.typed input:focus { outline: none; border-color: var(--ink); }
+.hint { font: 13px/1.4 var(--serif); color: var(--ash); margin-top: 8px; min-height: 1.2em; }
+.hint .err { color: var(--magenta); }
+
+/* certificate card */
+.card { position: absolute; right: 28px; top: 84px; width: min(340px, calc(100vw - 56px)); background: var(--ground); border: 1px solid var(--ash); border-radius: 14px; padding: 16px 18px; z-index: 5; display: none; font: 15px/1.45 var(--serif); }
+.card.on { display: block; }
+.card h4 { font: 600 16px var(--sans); margin: 0 0 6px; padding-right: 20px; }
+.card p { margin: 0 0 8px; }
+.card .close { position: absolute; top: 10px; right: 12px; background: none; border: 0; color: var(--ash); font-size: 20px; cursor: pointer; }
+.card code { font: 13px var(--mono); }
+.card .small { font: 13px/1.4 var(--sans); color: var(--ash); margin-top: 6px; }
+table.mx { border-collapse: collapse; margin: 8px 10px 4px 0; display: inline-table; font: 12px var(--mono); }
+table.mx td, table.mx th { border: 1px solid var(--mauve); padding: 2px 7px; text-align: center; }
+table.mx th { color: var(--ash); font-weight: 400; }
+table.mx td.des { background: var(--ink); color: #111; }
+
+.zoom { position: absolute; right: 24px; bottom: 26px; display: flex; flex-direction: column; gap: 6px; z-index: 4; }
+.zoom button { width: 36px; height: 36px; border-radius: 50%; background: var(--ground); border: 1px solid var(--ash); color: var(--ink); cursor: pointer; font: 16px var(--sans); }
+.zoom button:hover { border-color: var(--ink); }
+#tip { position: fixed; pointer-events: none; z-index: 9; background: var(--ink); color: #111; border-radius: 8px; padding: 6px 10px; font: 13px var(--sans); max-width: 300px; display: none; }
+.busy { position: absolute; top: 76px; left: 50%; transform: translateX(-50%); font: 14px var(--serif); color: var(--ash); display: none; z-index: 4; }
+.busy.on { display: block; }
+
+/* discoveries panel */
+.disc { position: absolute; left: 28px; top: 84px; width: min(400px, calc(100vw - 32px)); max-height: calc(100vh - 330px); overflow-y: auto; background: var(--ground); border: 1px solid var(--ash); border-radius: 14px; padding: 16px 18px; z-index: 5; display: none; font: 15px/1.45 var(--serif); }
+.disc.on { display: block; }
+.disc h4 { font: 600 16px var(--sans); margin: 0 0 4px; padding-right: 20px; }
+.disc .lede { color: var(--ash); margin: 0 0 12px; }
+.disc .floors { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+.disc .floors .pill { padding: 4px 10px; font-size: 12px; }
+.disc h5 { font: 500 13px var(--sans); color: var(--ash); margin: 16px 0 8px; text-transform: uppercase; letter-spacing: .04em; }
+.disc .find { border-top: 1px solid var(--mauve); padding: 10px 0; }
+.disc .find p { margin: 0 0 6px; }
+.disc code { font: 13px var(--mono); color: var(--yellow); }
+.disc .try { background: none; border: 1px solid var(--ash); border-radius: 32px; padding: 3px 12px; font: 12px var(--mono); cursor: pointer; }
+.disc .try:hover { border-color: var(--yellow); color: var(--yellow); }
+.disc .also { font: 13px/1.4 var(--sans); color: var(--ash); }
+.disc .close { position: absolute; top: 10px; right: 12px; background: none; border: 0; color: var(--ash); font-size: 20px; cursor: pointer; }
+.disc .smug { color: var(--lavender); }
+@media (max-width: 720px) {
+  .disc { left: 16px; top: auto; bottom: 200px; }
+  header { padding: 14px 16px; }
+  h1 { font-size: 20px; width: 100%; }
+  .zoom { display: none; }
+  .card { right: 16px; top: auto; bottom: 200px; }
+}
+</style>
+</head>
+<body>
+<div id="stage"><svg id="graph"></svg></div>
+<header>
+  <h1>The Logic Map</h1>
+  <div class="switch" id="family"><button class="pill" data-f="propositional">Propositional</button><button class="pill" data-f="modal">Modal</button></div>
+  <select class="pill" id="pick" aria-label="Go to a logic"></select>
+  <button class="pill" id="discBtn">Discoveries</button>
+</header>
+<div class="disc" id="disc"></div>
+<div class="busy" id="busy">Working it out…</div>
+<div class="card" id="card"></div>
+<div class="dock">
+  <div class="pop" id="pop"></div>
+  <p class="caption" id="caption"></p>
+  <p class="subcap" id="subcap"></p>
+  <div class="chips" id="chips"></div>
+</div>
+<div class="zoom"><button id="zin" title="Zoom in">+</button><button id="zout" title="Zoom out">−</button><button id="zfit" title="Fit to screen">⤢</button></div>
+<div id="tip"></div>
+<script src="modal_map.js" onerror="window.MODAL_MAP = null"></script>
+<script src="sandbox.js"></script>
+<script src="discoveries.js" onerror="window.DISCOVERIES = null"></script>
+<script>
+"use strict";
+const S = window.Sandbox, MM = window.MODAL_MAP;
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const fmt = n => Number(n).toLocaleString("en-US");
+const SVGNS = "http://www.w3.org/2000/svg";
+const el = (tag, attrs, parent) => { const e = document.createElementNS(SVGNS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); parent && parent.appendChild(e); return e; };
+const PROVING = ["given", "proved", "chained", "instance", "decided"];
+const proving = c => !!c && PROVING.includes(c.status);
+const FLOOR = { propositional: "linear logic", modal: "K" };
+const STORE = "logicmap-v4";
+// What each decision procedure is called in prose.
+const LOGIC_NAME = { linear: "linear logic", affine: "affine logic", relevant: "relevant logic", minimal: "minimal logic",
+  intuitionistic: "intuitionistic logic", LC: "Gödel–Dummett logic", classical: "classical logic", K: "K", S4: "S4", S5: "S5" };
+
+// ---------------------------------------------------------------- state
+const st = { family: "propositional", catalog: { propositional: [], modal: [] }, current: { propositional: ["K", "W", "EFQ"], modal: ["T", "4"] },
+             map: {}, baked: {}, options: {}, news: null, pop: false, card: null, selEdge: null };
+const lang = f => f === "modal" ? S.MODAL : S.PROP;
+function defaults(f) {
+  if (f === "propositional") return S.PROP.catalog.map(p => ({ ...p, custom: false }));
+  return MM ? MM.principles.map(p => ({ key: p.key, name: p.name, formula: S.canon(S.parsePolish(p.polish)), custom: false })) : [];
+}
+function save() { try { localStorage.setItem(STORE, JSON.stringify({ family: st.family, catalog: st.catalog, current: st.current })); } catch (e) { /* no storage */ } }
+function load() {
+  try {
+    const s = JSON.parse(localStorage.getItem(STORE) || "null");
+    if (!s || !s.catalog || !s.current) return false;
+    Object.assign(st, { family: s.family || st.family, catalog: s.catalog, current: s.current });
+    return true;
+  } catch (e) { return false; }
+}
+const pr = (f, k) => st.catalog[f].find(p => p.key === k);
+const MODAL_SHORT = { G: ".2", L: "Löb" };
+const short = (f, k) => { const p = pr(f, k); if (!p) return k; if (p.custom || f !== "modal") return p.name; return MODAL_SHORT[k] || k; };
+const keyOf = set => set.slice().sort().join("+");
+const joinWords = xs => xs.length < 2 ? xs.join("") : xs.slice(0, -1).join(", ") + " and " + xs[xs.length - 1];
+
+// ---------------------------------------------------------------- engine
+function compute(f) {
+  const cat = st.catalog[f], keys = cat.map(p => p.key);
+  const cur = st.current[f].filter(k => keys.includes(k));
+  st.current[f] = cur;
+  const extra = S.neighbourhood(cur, keys);
+  for (const p of keys) if (!cur.includes(p)) for (const x of cur) extra.push([...cur.filter(k => k !== x), p]);
+  // Propositional: every combination of the structural rules, but below the full floor only
+  // one added principle at a time (the map stays readable; the neighbourhood fills in the rest).
+  const M = S.computeMap(lang(f), cat, { maxCombo: 3, floorCombo: 1, extraBases: extra });
+  st.map[f] = M;
+  st.baked[f] = S.bakedIn(M, cur);
+  const byKey = new Map(M.bases.map(b => [keyOf(b.axioms), b]));
+  const here = byKey.get(keyOf(cur));
+  st.options[f] = cat.filter(p => !cur.includes(p.key)).map(p => {
+    const already = !!(here && proving(here.cells[p.key]));
+    const bakes = cur.filter(x => { const b = byKey.get(keyOf([...cur.filter(k => k !== x), p.key])); return b && proving(b.cells[x]) && b.cells[x].status !== "given"; });
+    return { key: p.key, after: nodeOfSet(M, [...cur, p.key]), already, bakes };
+  });
+}
+function nodeOfSet(M, set) { const k = keyOf(set); return M.nodes.findIndex(n => n.bases.some(b => keyOf(b) === k)); }
+function title(n) {
+  if (!n) return "?";
+  if (n.flag === "inconsistent") return "inconsistent";
+  if (n.flag === "ver") return "Ver";
+  const t = n.title || n.names[0];
+  // Modal names are built from keys; G is the .2 axiom (KTG reads as KT.2).
+  if (st.family === "modal") return /^K[DTB45G]+$/.test(t) ? t.replace(/G/g, ".2") : t.replace(/\b(G|L)\b/g, k => short("modal", k));
+  // Propositional names list principle keys after the floor ("affine +", "intuitionistic +"): use the short names.
+  const m = t.match(/^(linear|affine|relevant|minimal|intuitionistic) \+ (.*)$/);
+  return m ? `${m[1]} + ${m[2].split(" + ").map(k => pr("propositional", k) ? short("propositional", k) : k).join(" + ")}` : t;
+}
+function cellsOf(M, set) { const b = M.bases.find(x => keyOf(x.axioms) === keyOf(set)); return b ? b.cells : null; }
+function hereNode(f) { const M = st.map[f]; return M ? M.nodes[nodeOfSet(M, st.current[f])] : null; }
+function provesHere(f) { const M = st.map[f], c = cellsOf(M, st.current[f]); return c ? M.principles.filter(p => proving(c[p.key])).map(p => p.key) : []; }
+
+// ---------------------------------------------------------------- actions
+function run(f, change) {
+  $("#busy").classList.add("on");
+  setTimeout(() => {
+    const before = st.map[f] ? { node: hereNode(f), proves: provesHere(f), baked: st.baked[f], set: st.current[f].slice() } : null;
+    try {
+      change && change.apply();
+      compute(f);
+      st.news = change ? explain(f, change, before) : null;
+      save();
+    } catch (err) {
+      st.news = { lead: `Something went wrong: ${esc(err.message || err)}`, more: "" };
+    }
+    st.pop = false; st.card = null; st.selEdge = null;
+    $("#busy").classList.remove("on");
+    render(change && change.kind !== "move" ? "keep" : "fit");
+  }, 20);
+}
+const add = (f, key) => run(f, { kind: "add", key, apply() { if (!st.current[f].includes(key)) st.current[f] = [...st.current[f], key]; } });
+const brk = (f, key) => run(f, { kind: "break", key, apply() { st.current[f] = st.current[f].filter(k => k !== key); } });
+function moveTo(f, i) {
+  const n = st.map[f].nodes[i];
+  const rep = n.bases.slice().sort((a, b) => a.length - b.length || keyOf(a).localeCompare(keyOf(b)))[0];
+  run(f, { kind: "move", apply() { st.current[f] = rep.slice(); } });
+}
+function addTyped() {
+  const src = $("#typed").value.trim();
+  let t;
+  try { t = S.parse(src); } catch (e) { return; }
+  const f = S.hasBox(t) ? "modal" : "propositional";
+  st.family = f;
+  const same = st.catalog[f].find(p => S.key(p.formula) === S.key(t));
+  if (same) { add(f, same.key); return; }
+  let n = 1;
+  while (st.catalog[f].some(p => p.key === "X" + n)) n++;
+  const key = "X" + n, name = S.show(t).length <= 18 ? S.show(t) : "your axiom " + n;
+  run(f, { kind: "add", key, apply() { st.catalog[f].push({ key, name, formula: t, custom: true }); st.current[f] = [...st.current[f], key]; } });
+}
+
+// One or two sentences about what an action did.
+function explain(f, ch, before) {
+  const after = hereNode(f);
+  const name = ch.key ? short(f, ch.key) : "";
+  const tA = before && before.node ? title(before.node) : "?", tB = title(after);
+  const moved = !before || !before.node || !after ||
+    !(after.bases.some(b => keyOf(b) === keyOf(before.set)) || (!before.set.length && after.bases.some(b => !b.length)));
+  const from = ws => ws.map(w => w.from.length ? w.from.map(k => short(f, k)).join(" + ") : FLOOR[f]).join(" or ");
+  let lead;
+  const more = [];
+  if (ch.kind === "add") {
+    const ws = st.baked[f][ch.key] || [];
+    if (!moved && ws.length) lead = `<b>${esc(name)}</b> was already true here: it follows from ${esc(from(ws))}.`;
+    else lead = moved ? `Adding <b>${esc(name)}</b> takes you from ${esc(tA)} to <b>${esc(tB)}</b>.` : `Adding <b>${esc(name)}</b> keeps you in <b>${esc(tB)}</b>.`;
+    const newly = Object.entries(st.baked[f]).filter(([x, w]) => x !== ch.key && w.length && w.some(v => v.from.includes(ch.key)) && !(before && before.baked && (before.baked[x] || []).length));
+    if (newly.length) more.push(`<span class="baked">It bakes in ${esc(joinWords(newly.map(([x]) => short(f, x))))}</span>, which you could now drop.`);
+  } else if (ch.kind === "break") {
+    const ws = (before && before.baked && before.baked[ch.key]) || [];
+    if (!moved && ws.length) lead = `Dropping <b>${esc(name)}</b> changes nothing: it was baked into ${esc(from(ws))}.`;
+    else lead = `Dropping <b>${esc(name)}</b> takes you from ${esc(tA)} down to <b>${esc(tB)}</b>.`;
+  } else return null;
+  if (moved && before) {
+    const now = provesHere(f);
+    const gained = now.filter(k => !before.proves.includes(k) && k !== ch.key), lost = before.proves.filter(k => !now.includes(k) && k !== ch.key && pr(f, k));
+    if (gained.length) more.push(`Now true: ${esc(joinWords(gained.map(k => short(f, k))))}.`);
+    if (lost.length) more.push(`No longer true: ${esc(joinWords(lost.map(k => short(f, k))))}.`);
+  }
+  return { lead, more: more.join(" ") };
+}
+
+// ---------------------------------------------------------------- certificates (the card)
+function frameSvg(m, failing) {
+  const n = m.worlds, R = n === 1 ? 0 : 42, cx = 70, cy = 72, r = 12;
+  const P = [...Array(n)].map((_, i) => ({ x: cx + R * Math.cos(-Math.PI / 2 + 2 * Math.PI * i / n), y: cy + R * Math.sin(-Math.PI / 2 + 2 * Math.PI * i / n) }));
+  let s = `<svg width="140" height="130" style="display:block;margin:8px 0"><defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#a7a7a7"/></marker></defs>`;
+  for (const [a, b] of m.arrows) {
+    if (a === b) { s += `<circle cx="${P[a].x}" cy="${P[a].y - r - 6}" r="7" fill="none" stroke="#a7a7a7"/>`; continue; }
+    const dx = P[b].x - P[a].x, dy = P[b].y - P[a].y, L = Math.hypot(dx, dy), ux = dx / L, uy = dy / L;
+    const off = m.arrows.some(([c, d]) => c === b && d === a) ? 4 : 0;
+    s += `<line x1="${P[a].x + ux * r - uy * off}" y1="${P[a].y + uy * r + ux * off}" x2="${P[b].x - ux * r - uy * off}" y2="${P[b].y - uy * r + ux * off}" stroke="#a7a7a7" marker-end="url(#arr)"/>`;
+  }
+  P.forEach((p, i) => {
+    const bad = failing && failing.world === i;
+    s += `<circle cx="${p.x}" cy="${p.y}" r="${r}" fill="${bad ? "#ffe021" : "#13051d"}" stroke="${bad ? "#ffe021" : "#a7a7a7"}"/><text x="${p.x}" y="${p.y + 4}" text-anchor="middle" font-size="11" font-family="IBM Plex Mono, monospace" fill="${bad ? "#111" : "#fff"}">w${i}</text>`;
+  });
+  return s + "</svg>";
+}
+function modelHtml(M, id, failing) {
+  const m = M.models[id];
+  if (!m) return "";
+  if (M.kind === "modal") {
+    const val = failing ? Object.entries(failing.valuation).map(([k, ws]) => `${k} true at ${ws.length ? ws.map(w => "w" + w).join(", ") : "no world"}`).join("; ") : "";
+    return `${frameSvg(m, failing)}<div class="small">Arrows show which worlds each world can see. ${failing ? `With ${esc(val)}, it fails at the yellow world.` : ""}</div>`;
+  }
+  const V = m.values, des = new Set(m.designated);
+  const cell = v => `<td class="${des.has(v) ? "des" : ""}">${esc(V[v])}</td>`;
+  const table = (op, rows) => `<table class="mx"><tr><th>${op}</th>${V.map(v => `<th>${esc(v)}</th>`).join("")}</tr>${rows.map((row, a) => `<tr><th>${esc(V[a])}</th>${row.map(cell).join("")}</tr>`).join("")}</table>`;
+  const neg = m.imp.map(row => row[m.bot]);
+  const order = m.chain ? `Values run ${V.map(esc).join(" < ")}; ∧ takes the smaller, ∨ the larger.` : "";
+  return `<div>${table("→", m.imp)}<table class="mx"><tr><th>x</th>${V.map(v => `<th>${esc(v)}</th>`).join("")}</tr><tr><th>¬x</th>${neg.map(cell).join("")}</tr></table>${m.chain ? "" : table("∧", m.meet) + table("∨", m.join)}</div>
+    <div class="small">A ${V.length}-valued truth table with ⊥ = ${esc(V[m.bot])}; white values count as true. ${order}${failing ? ` It fails when ${Object.entries(failing).map(([k, v]) => `${esc(k)} = ${esc(v)}`).join(", ")}.` : ""}</div>`;
+}
+function why(f, k, c, set) {
+  const M = st.map[f], name = short(f, k), setName = set && set.length ? set.map(x => short(f, x)).join(" + ") : FLOOR[f];
+  if (!c) return "";
+  if (c.status === "refuted") return `<p>Here is a world where ${esc(setName)} holds but ${esc(name)} doesn't, so no proof can exist.</p>${modelHtml(M, c.model, c.falsified_by)}`;
+  if (c.status === "instance") return `<p>${esc(setName)} proves ${esc(name)}. The proof uses ${c.instances.map(x => `<code>${esc(x.formula)}</code>`).join(" and ")}, and the rest is ${esc(LOGIC_NAME[c.by] || c.by)}, found by proof search.</p>`;
+  if (c.status === "chained") return `<p>${esc(setName)} proves ${esc(c.via.map(x => short(f, x)).join(" + "))}, and that proves ${esc(name)}.</p>`;
+  if (c.status === "decided") return `<p>${esc(name)} is a theorem of ${esc(LOGIC_NAME[c.by] || c.by)}, which ${esc(setName)} already contains.</p>`;
+  return `<p>Not settled yet.</p>`;
+}
+function drawCard() {
+  const c = $("#card");
+  if (!st.card) { c.classList.remove("on"); return; }
+  c.innerHTML = `<button class="close" aria-label="Close">×</button><h4>${st.card.head}</h4>${st.card.body}`;
+  c.classList.add("on");
+  c.querySelector(".close").addEventListener("click", closeAll);
+}
+function closeAll() { st.pop = false; st.card = null; st.selEdge = null; drawPop(); drawCard(); drawGraph("keep"); }
+
+// ---------------------------------------------------------------- graph
+const view = { x: 0, y: 0, w: 1000, h: 600 };
+let layout = null;
+function drawGraph(mode) {
+  const f = st.family, M = st.map[f], svg = $("#graph");
+  svg.innerHTML = "";
+  if (!M) return;
+  const nodes = M.nodes, edges = M.edges, n = nodes.length;
+  const rank = new Array(n).fill(0);
+  for (let it = 0; it < n; it++) for (const e of edges) rank[e.to] = Math.max(rank[e.to], rank[e.from] + 1);
+  const byRank = [];
+  rank.forEach((r, i) => (byRank[r] = byRank[r] || []).push(i));
+  // Lanes: affine logics (weakening, no contraction) on the left wing, relevant ones (contraction,
+  // no weakening) on the right, everything with both rules or neither up the middle.
+  const lane = nd => nd.rung === "affine" ? -1 : nd.rung === "relevant" ? 1 : 0;
+  const slot = new Array(n).fill(0);
+  byRank.forEach((ids, r) => {
+    const bary = i => { const b = edges.filter(e => e.to === i).map(e => slot[e.from]); return b.length ? b.reduce((x, y) => x + y, 0) / b.length : 0; };
+    ids.sort((a, b) => lane(nodes[a]) - lane(nodes[b]) || (r > 0 ? bary(a) - bary(b) : 0));
+    ids.forEach((i, k) => { slot[i] = k - (ids.length - 1) / 2; });
+  });
+  // Big maps label only the landmarks and the logics next to you; the rest are dots.
+  const sparse = n > 26;
+  const here = nodeOfSet(M, st.current[f]);
+  const ups = new Set(edges.filter(e => e.from === here).map(e => e.to)), downs = new Set(edges.filter(e => e.to === here).map(e => e.from));
+  const landmark = nd => !nd.flag && !/ \+ /.test(title(nd));
+  const labelled = i => !sparse || i === here || ups.has(i) || landmark(nodes[i]);
+  const GX = sparse ? 44 : Math.max(110, Math.min(200, 24 + 8 * Math.max(...nodes.map(nd => title(nd).length)))), GY = sparse ? 74 : 96;
+  const pos = [];
+  if (sparse) {
+    const groups = byRank.map(ids => [-1, 0, 1].map(l => ids.filter(i => lane(nodes[i]) === l)));
+    const half = l => Math.max(0, ...groups.map(g => g[l + 1].length)) * GX / 2;
+    const center = { "-1": -(half(0) + half(-1) + 2 * GX), 0: 0, 1: half(0) + half(1) + 2 * GX };
+    groups.forEach((g, r) => g.forEach((ids, li) => ids.forEach((i, k) => { pos[i] = { x: center[li - 1] + (k - (ids.length - 1) / 2) * GX, y: -r * GY }; })));
+  } else byRank.forEach((ids, r) => ids.forEach((i, k) => { pos[i] = { x: (k - (ids.length - 1) / 2) * GX, y: -r * GY }; }));
+  const ge = el("g", {}, svg), gl = el("g", {}, svg), gn = el("g", {}, svg);
+  const upTargets = ups;
+  edges.forEach((e, k) => {
+    const a = pos[e.from], b = pos[e.to], up = e.from === here;
+    const d = `M${a.x},${a.y} C${a.x},${(a.y + b.y) / 2} ${b.x},${(a.y + b.y) / 2} ${b.x},${b.y}`;
+    el("path", { d, class: "edge" + (up ? " up" : "") + (st.selEdge === k ? " sel" : "") }, ge);
+    const hit = el("path", { d, class: "edge hit" }, ge);
+    hit.addEventListener("click", ev => { ev.stopPropagation(); openEdge(k); });
+    if (up || st.selEdge === k) {
+      const lab = el("g", { class: "elabel-g", "data-x": (a.x + b.x) / 2, "data-y": (a.y + b.y) / 2 }, gl);
+      const txt = el("text", { x: 6, y: 4, class: "elabel" }, lab);
+      txt.textContent = "+ " + e.adds.map(x => short(f, x)).join(", ");
+      lab.addEventListener("click", ev => { ev.stopPropagation(); openEdge(k); });
+    }
+  });
+  nodes.forEach((nd, i) => {
+    const { x, y } = pos[i];
+    const cls = "node" + (i === here ? " here" : upTargets.has(i) ? " next" : downs.has(i) ? " prev" : "") + (nd.flag ? " odd" : "") + (landmark(nd) ? " mark" : "");
+    const g = el("g", { class: cls, "data-x": x, "data-y": y }, gn);
+    if (i === here) el("circle", { r: 24, class: "halo" }, g);
+    el("circle", { r: i === here ? 12 : sparse && !labelled(i) ? 3.5 : 5, class: "dot" }, g);
+    if (labelled(i)) {
+      // Logics one step up are labelled above their dots, clear of the edge labels below them.
+      const t = el("text", { x: 0, y: i === here ? 38 : sparse && ups.has(i) ? -12 : 22, "text-anchor": "middle", class: "lab" }, g);
+      t.textContent = title(nd);
+    }
+    el("circle", { r: 16, fill: "transparent" }, g);
+    g.addEventListener("click", ev => { ev.stopPropagation(); if (i !== here) moveTo(f, i); });
+    g.addEventListener("mousemove", ev => tip(ev, i === here ? "You're here" : `Go to <b>${esc(title(nd))}</b>`));
+    g.addEventListener("mouseleave", hideTip);
+  });
+  const xs = pos.map(p => p.x), ys = pos.map(p => p.y);
+  layout = { x0: Math.min(...xs) - 90, x1: Math.max(...xs) + 90, y0: Math.min(...ys) - 40, y1: Math.max(...ys) + 50 };
+  if (mode === "fit") fit(); else applyView();
+}
+function openEdge(k) {
+  const f = st.family, M = st.map[f], e = M.edges[k], lo = M.nodes[e.from], hi = M.nodes[e.to];
+  const loSet = lo.bases.slice().sort((a, b) => a.length - b.length)[0];
+  const c = e.strict_by ? cellsOf(M, loSet)[e.strict_by] : null;
+  st.selEdge = k; st.pop = false;
+  st.card = { head: `${esc(title(lo))} → ${esc(title(hi))}`,
+              body: `<p>Adding ${esc(joinWords(e.adds.map(x => short(f, x))))} to ${esc(title(lo))} gives ${esc(title(hi))}.</p>${c ? `<p class="small">It's a real step up: ${esc(short(f, e.strict_by))} can't be proved in ${esc(title(lo))}.</p>${why(f, e.strict_by, c, loSet)}` : ""}` };
+  drawPop(); drawCard(); drawGraph("keep");
+}
+function fit() {
+  if (!layout) return;
+  const r = $("#stage").getBoundingClientRect();
+  if (!r.width || !r.height) return;              // hidden (e.g. a background tab): fit later
+  const top = 90, bottom = 200;                 // room for the title and the caption dock
+  const w = layout.x1 - layout.x0, h = layout.y1 - layout.y0;
+  const s = Math.min(r.width / w, Math.max(80, r.height - top - bottom) / h, 1.6);
+  view.w = r.width / s; view.h = r.height / s;
+  view.x = (layout.x0 + layout.x1) / 2 - view.w / 2;
+  view.y = layout.y0 - top / s;
+  applyView();
+}
+// Dots and labels keep a constant size on screen; only positions follow the zoom.
+function applyView() {
+  const svg = $("#graph");
+  svg.setAttribute("viewBox", `${view.x} ${view.y} ${view.w} ${view.h}`);
+  const k = view.w / Math.max(1, $("#stage").getBoundingClientRect().width);
+  if (!isFinite(k) || !isFinite(view.x) || !isFinite(view.y)) return;
+  svg.querySelectorAll("[data-x]").forEach(g => g.setAttribute("transform", `translate(${g.dataset.x},${g.dataset.y}) scale(${k})`));
+}
+function zoom(factor, cx, cy) {
+  const r = $("#stage").getBoundingClientRect();
+  const px = cx == null ? 0.5 : (cx - r.left) / r.width, py = cy == null ? 0.5 : (cy - r.top) / r.height;
+  const nx = view.x + px * view.w, ny = view.y + py * view.h;
+  view.w *= factor; view.h *= factor; view.x = nx - px * view.w; view.y = ny - py * view.h;
+  applyView();
+}
+(function panZoom() {
+  const stage = $("#stage");
+  let drag = null;
+  stage.addEventListener("wheel", e => { e.preventDefault(); zoom(e.deltaY > 0 ? 1.12 : 1 / 1.12, e.clientX, e.clientY); }, { passive: false });
+  stage.addEventListener("pointerdown", e => { if (e.target.closest(".node,.hit,.elabel")) return; drag = { x: e.clientX, y: e.clientY, vx: view.x, vy: view.y, moved: false }; stage.classList.add("dragging"); stage.setPointerCapture(e.pointerId); });
+  stage.addEventListener("pointermove", e => {
+    if (!drag) return;
+    const r = stage.getBoundingClientRect();
+    if (Math.abs(e.clientX - drag.x) + Math.abs(e.clientY - drag.y) > 3) drag.moved = true;
+    view.x = drag.vx - (e.clientX - drag.x) * view.w / r.width; view.y = drag.vy - (e.clientY - drag.y) * view.h / r.height;
+    applyView();
+  });
+  stage.addEventListener("pointerup", () => {
+    if (drag && !drag.moved && (st.pop || st.card)) closeAll();
+    drag = null; stage.classList.remove("dragging");
+  });
+  $("#zin").addEventListener("click", () => zoom(1 / 1.25));
+  $("#zout").addEventListener("click", () => zoom(1.25));
+  $("#zfit").addEventListener("click", fit);
+  addEventListener("resize", fit);
+})();
+const tipEl = $("#tip");
+function tip(e, html) { tipEl.innerHTML = html; tipEl.style.display = "block"; tipEl.style.left = e.clientX + 14 + "px"; tipEl.style.top = e.clientY + 14 + "px"; }
+function hideTip() { tipEl.style.display = "none"; }
+
+// ---------------------------------------------------------------- dock: caption, assumptions, add
+function drawDock() {
+  const f = st.family, M = st.map[f];
+  if (!M) return;
+  const here = hereNode(f), cur = st.current[f], baked = st.baked[f] || {};
+  if (st.news) {
+    $("#caption").innerHTML = st.news.lead;
+    $("#subcap").innerHTML = st.news.more;
+  } else {
+    const t = title(here), head = t.charAt(0).toUpperCase() + t.slice(1);
+    $("#caption").innerHTML = `<b>${esc(head)}</b>: ${cur.length ? FLOOR[f] + " plus " + esc(joinWords(cur.map(k => short(f, k)))) : FLOOR[f] + ", nothing added"}.`;
+    const b = cur.filter(k => (baked[k] || []).length);
+    $("#subcap").innerHTML = b.length ? `<span class="baked">${esc(joinWords(b.map(k => short(f, k))))} ${b.length > 1 ? "are" : "is"} baked in</span>: you could drop ${b.length > 1 ? "one" : "it"} and stay here.` : "";
+  }
+  // Structural rules (weakening, contraction) first, set apart from the other assumptions.
+  const isStruct = k => !!(pr(f, k) && pr(f, k).structural);
+  const order = [...cur.filter(isStruct), ...cur.filter(k => !isStruct(k))];
+  $("#chips").innerHTML = order.map((k, i) => {
+    const ws = baked[k] || [], p = pr(f, k);
+    const sep = i > 0 && isStruct(order[i - 1]) && !isStruct(k) ? `<span class="sep" aria-hidden="true"></span>` : "";
+    return `${sep}<button class="pill chip${ws.length ? " baked" : ""}${isStruct(k) ? " rule" : ""}" data-k="${esc(k)}" title="${esc(S.show(p.formula))}${p.note ? " · " + esc(p.note) : ""}${ws.length ? " · baked in: follows from " + esc(ws.map(w => w.from.map(x => short(f, x)).join(" + ")).join(" or ")) : ""} · click to drop">${esc(short(f, k))}<span class="x">×</span></button>`;
+  }).join("") + `<button class="add" id="addBtn">+ Add an assumption</button>`;
+  $("#chips").querySelectorAll(".chip").forEach(b => b.addEventListener("click", () => brk(f, b.dataset.k)));
+  $("#addBtn").addEventListener("click", ev => { ev.stopPropagation(); st.pop = !st.pop; st.card = null; st.selEdge = null; drawCard(); drawPop(); });
+  drawPop();
+}
+function drawPop() {
+  const f = st.family, M = st.map[f], pop = $("#pop");
+  pop.classList.toggle("on", st.pop);
+  if (!st.pop || !M) return;
+  const opts = st.options[f].slice().sort((a, b) => (a.already - b.already) || short(f, a.key).localeCompare(short(f, b.key)));
+  pop.innerHTML = `<h3>Add one</h3><div class="opts">${opts.map(o => {
+      const to = o.already ? "already true" : o.after >= 0 ? "→ " + title(M.nodes[o.after]) : "";
+      return `<button class="pill opt${o.already ? " same" : ""}" data-k="${esc(o.key)}" title="${esc(S.show(pr(f, o.key).formula))}${o.bakes.length ? " · bakes in " + esc(o.bakes.map(x => short(f, x)).join(", ")) : ""}">${esc(short(f, o.key))}<span class="to">${esc(to)}</span></button>`;
+    }).join("")}</div>
+    <h3>Or write your own</h3>
+    <div class="typed"><input id="typed" placeholder="${f === "modal" ? "[]<>p -> <>[]p" : "((p -> q) -> q) -> ((q -> p) -> p)"}" spellcheck="false" autocomplete="off"><button class="add" id="typedBtn">Add</button></div>
+    <div class="hint" id="hint">${HINT}</div>`;
+  pop.querySelectorAll(".opt").forEach(b => b.addEventListener("click", () => add(f, b.dataset.k)));
+  const inp = $("#typed");
+  inp.addEventListener("input", hint);
+  inp.addEventListener("keydown", e => { if (e.key === "Enter") addTyped(); if (e.key === "Escape") closeAll(); });
+  $("#typedBtn").addEventListener("click", addTyped);
+  pop.addEventListener("click", e => e.stopPropagation());
+  setTimeout(() => inp.focus({ preventScroll: true }), 0);
+}
+const HINT = "Use -> ~ &amp; | ⊥ [] &lt;&gt; and letters. Anything with [] or &lt;&gt; is modal.";
+function hint() {
+  const src = $("#typed").value.trim(), box = $("#hint");
+  if (!src) { box.innerHTML = HINT; return; }
+  let t;
+  try { t = S.parse(src); } catch (e) { box.innerHTML = `<span class="err">${esc(e.message)}</span>`; return; }
+  const modal = S.hasBox(t);
+  let what;
+  if (modal) what = S.isTheorem(t, "K") ? "already true in K" : S.isTheorem(t, "S4") ? "true in S4, not in K" : "not true even in S4";
+  else {
+    const w = S.PROP.weakest(t);
+    what = w === "linear" ? "already true in linear logic" : w === "not classical" ? "not a classical tautology: it would make everything provable"
+         : w.includes("affine") || w.includes("relevant") ? `true in ${w} logic, not in linear logic` : `true in ${w} logic, not in linear, affine or relevant logic`;
+  }
+  box.innerHTML = `${esc(S.show(t))}: ${modal ? "modal" : "propositional"}, ${esc(what)}.`;
+}
+
+
+// ---------------------------------------------------------------- discoveries (scripts/discover.js)
+const DISC = window.DISCOVERIES;
+const FLOOR_SETS = { linear: [], affine: ["K"], relevant: ["W"], minimal: ["K", "W"], intuitionistic: ["K", "W", "EFQ"] };
+function floorHere() {
+  const p = provesHere("propositional"), has = k => p.includes(k);
+  return has("K") && has("W") ? (has("EFQ") ? "intuitionistic" : "minimal") : has("K") ? "affine" : has("W") ? "relevant" : "linear";
+}
+function drawDisc() {
+  const box = $("#disc");
+  $("#discBtn").classList.toggle("on", !!st.disc);
+  $("#discBtn").style.display = st.family === "propositional" && DISC ? "" : "none";
+  if (!st.disc || st.family !== "propositional" || !DISC) { box.classList.remove("on"); return; }
+  const floor = st.disc.floor, res = DISC.runs.find(r => r.floor === floor);
+  const nm = k => short("propositional", k);
+  const list = ks => ks.length ? joinWords(ks.map(nm)) : "";
+  const fbase = FLOOR_SETS[floor];
+  const tryBtn = (e) => `<button class="try" data-phi="${esc(e.formula)}">Try it</button>`;
+  const also = f => f.count > 1 ? `<div class="also">${f.count - 1} other formula${f.count > 2 ? "s" : ""} found with the same result${f.examples.length > 1 ? `, e.g. ${f.examples.slice(1).map(e => `<code>${esc(e.formula)}</code>`).join(", ")}` : ""}.</div>` : "";
+  const eq = res.findings.filter(f => f.outcome === "equivalent");
+  const nw = res.findings.filter(f => f.outcome === "new" && f.gained.length);
+  const blank = res.findings.find(f => f.outcome === "new" && !f.gained.length);
+  box.innerHTML = `<button class="close" aria-label="Close">×</button>
+    <h4>What the search found</h4>
+    <p class="lede">We added every classically true formula in p and q with up to ${DISC.maxOps} connectives, one at a time, to ${esc(LOGIC_NAME[floor])}. That's ${fmt(res.candidates)} formulas not already true there, ${fmt(res.examined)} of them different enough to test; ${fmt(res.unsettled)} couldn&rsquo;t be settled.</p>
+    <div class="floors">${DISC.runs.map(r => `<button class="pill${r.floor === floor ? " on" : ""}" data-floor="${r.floor}">${r.floor}</button>`).join("")}</div>
+    <h5>One formula, several principles</h5>
+    ${eq.length ? eq.map(f => {
+      const e = f.examples[0], smug = f.collapse.filter(k => k !== "EFQ" || floor !== "intuitionistic");
+      return `<div class="find"><p><code>${esc(e.formula)}</code> gives exactly ${esc(list(f.gained))}, nothing more.${smug.length ? ` <span class="smug">It smuggles in ${esc(list(smug))}.</span>` : ""}</p>${tryBtn(e)}${also(f)}</div>`;
+    }).join("") : `<p class="also">None at this size.</p>`}
+    <h5>Logics that aren't on the map</h5>
+    ${nw.map(f => {
+      const e = f.examples[0];
+      return `<div class="find"><p><code>${esc(e.formula)}</code> gives ${esc(list(f.gained))}, yet says strictly more than ${esc(list(f.gained))} together: there's a logic in between.</p>${tryBtn(e)}${also(f)}</div>`;
+    }).join("")}
+    ${blank ? `<div class="find"><p>${fmt(blank.count)} formulas prove none of the named principles but are still new axioms, e.g. ${blank.examples.map(e => `<code>${esc(e.formula)}</code>`).join(", ")}.</p>${tryBtn(blank.examples[0])}</div>` : ""}
+    <p class="also" style="margin-top:12px">Each result has a certificate: a proof found by search, or a small truth table where the formula fails. Whether a result is new to the literature is a separate question.</p>`;
+  box.classList.add("on");
+  box.querySelector(".close").addEventListener("click", () => { st.disc = null; drawDisc(); });
+  box.querySelectorAll(".floors .pill").forEach(b => b.addEventListener("click", () => { st.disc.floor = b.dataset.floor; drawDisc(); }));
+  box.querySelectorAll(".try").forEach(b => b.addEventListener("click", () => tryFormula(floor, b.dataset.phi)));
+  box.addEventListener("click", e => e.stopPropagation());
+  box.addEventListener("pointerdown", e => e.stopPropagation());
+}
+// Go to the starting logic, then add the formula there, so the caption reports what it does.
+function tryFormula(floor, src) {
+  const f = "propositional", t = S.parse(src.replace(/→/g, "->").replace(/∧/g, "&").replace(/∨/g, "|").replace(/¬/g, "~"));
+  st.current[f] = FLOOR_SETS[floor].slice();
+  let key = (st.catalog[f].find(p => S.key(p.formula) === S.key(t)) || {}).key;
+  const fresh = !key;
+  if (fresh) { let n = 1; while (st.catalog[f].some(p => p.key === "X" + n)) n++; key = "X" + n; }
+  const name = S.show(t).length <= 18 ? S.show(t) : "found axiom " + key.slice(1);
+  run(f, { kind: "add", key, apply() { if (fresh) st.catalog[f].push({ key, name, formula: t, custom: true }); st.current[f] = [...FLOOR_SETS[floor], key]; } });
+}
+$("#discBtn").addEventListener("click", ev => { ev.stopPropagation(); st.disc = st.disc ? null : { floor: floorHere() }; drawDisc(); });
+
+// ---------------------------------------------------------------- top
+function drawTop() {
+  const f = st.family, M = st.map[f];
+  document.querySelectorAll("#family .pill").forEach(b => b.classList.toggle("on", b.dataset.f === f));
+  if (!M) return;
+  const here = nodeOfSet(M, st.current[f]);
+  const order = M.nodes.map((n, i) => i).sort((a, b) => M.nodes[a].rep.length - M.nodes[b].rep.length || title(M.nodes[a]).localeCompare(title(M.nodes[b])));
+  $("#pick").innerHTML = order.map(i => `<option value="${i}"${i === here ? " selected" : ""}>${esc(title(M.nodes[i]))}</option>`).join("");
+}
+function render(mode) { drawTop(); drawGraph(mode); drawDock(); drawCard(); drawDisc(); }
+document.querySelectorAll("#family .pill").forEach(b => b.addEventListener("click", () => {
+  st.family = b.dataset.f; st.news = null; st.pop = false; st.card = null; st.selEdge = null;
+  if (!st.map[st.family]) run(st.family, null); else { save(); render("fit"); }
+}));
+$("#pick").addEventListener("change", e => moveTo(st.family, +e.target.value));
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeAll(); });
+
+if (!load()) for (const f of ["propositional", "modal"]) st.catalog[f] = defaults(f);
+for (const f of ["propositional", "modal"]) if (!st.catalog[f].length) st.catalog[f] = defaults(f);
+run(st.family, null);
+</script>
+</body>
+</html>
