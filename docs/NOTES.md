@@ -717,3 +717,52 @@ The full run took about 2.3 hours on a laptop (five processes in parallel; linea
 Tests: `tests/test_discover.py`.
 
 **Caveats.** The search certifies facts; it doesn't know which are new to the literature. Several above are known results (mingle, disjunctive syllogism and explosion, the Gödel logics). Formulas are grouped by which finite models they hold in, so two formulas that agree on every model are treated as one (the shorter is tested). "Try it" on the page recomputes the whole map in the browser, which can take several seconds. "Logics that aren't on the map" are many: the space between linear and classical logic is huge, so the page shows the shortest few per profile.
+
+## 20. The lemma contest, and whether tree size does the work
+
+Two follow-ups to the naming-gain result in section 13, which rested on only 12 named theorems.
+
+```
+python -m logicgraph.lemma_contest data/gen/luk21     # ~12 min; writes lemma_contest.{md,json} there
+```
+
+Full report: [lemma_contest.md](lemma_contest.md).
+
+### 1. The contest
+
+Instead of asking "do named theorems rank high?", score whole lemma libraries. A library S costs
+
+  cost(S) = Σ_{v ∈ S} L(v) + Σ_{t ∈ library} L_S(t)
+
+where each named lemma counts as one step once it is named, and L_S is the shortest proof when the lemmas in S are free. Every library has the same size as the human one (the 12 named candidates; 8 if only Principia's names are kept, since set.mm's were chosen in this exact axiom system). The score is the total saving over all 8,114 library theorems, so it no longer hangs on 12 labels.
+
+| cost measure | greedy | top 12 by naming gain | human (12) | random, matched (mean / 95th pct) | human as % of greedy |
+|---|---|---|---|---|---|
+| tree size | 63,922 | 58,588 | 38,044 | 17,803 / 23,861 | 60% |
+| DAG size | 20,375 | 16,099 | 9,900 | 5,040 / 7,152 | 49% |
+
+Random libraries match the human one lemma for lemma in proof length and statement size (2,000 draws).
+
+- **The human library beats every random library of the same shape** under both measures: about twice the matched-random saving. The Principia-only set does too (tree: 30,868 vs 10,649 mean; DAG: 7,664 vs 3,010).
+- **Greedy does better, as it must.** It optimizes this exact number, while the humans also chose for proofs far beyond the 21-step horizon and for exposition. So the informative figure is the ratio: the human library gets 60% (tree) or 49% (DAG) of the greedy optimum, against about 25–28% for random.
+- **Greedy and the humans agree at the top.** Greedy's first tree-size pick is Principia's *Syll* (`(p → q) → ((r → p) → (r → q))`, *2.05). Under DAG size it is second, and *2.75 is third. Two or three of greedy's 12 picks are human-named under either measure.
+- Ranking candidates by naming gain alone gets 79–92% of greedy, so most of the contest is decided by individual gains, not by how lemmas combine.
+
+### 2. Is tree size doing the work?
+
+Under tree size, a lemma used m times in one proof is paid for m times, which flatters naming. Under DAG size each distinct step counts once. The smallest DAG proof is hard to find, so D(t) is computed by dynamic programming (each theorem keeps the smallest set of steps found; relaxed to a fixed point over the 21,241 theorems with L ≤ 17). That is an upper bound on the true smallest DAG. Total library cost drops from 128,820 (tree) to 79,592 (DAG).
+
+| naming gain under | AUC | matched AUC (same size and proof length) |
+|---|---|---|
+| tree size | 0.92 (0.86–0.97) | 0.90 (0.78–0.99) |
+| DAG size | 0.92 (0.87–0.96) | 0.79 (0.66–0.91) |
+
+- **The effect survives, weaker.** Under DAG size, naming gain still separates named from unnamed theorems of the same size and proof length (interval clear of 0.5), but the matched AUC drops from 0.90 to 0.79. So part of the signal was the bookkeeping, and most of it was the lemmas.
+- The two gains correlate at 0.88 (Spearman) over all 2,890 candidates. *Syll* stays near the top (rank 1 → 2).
+- Lemmas whose value is mostly reuse inside one proof drop the most: `p → (q → (r → q))` (48 → 249), `(p → q) → ((q → r) → (p → r))` (22 → 176).
+
+### Caveats
+
+- Still one axiom system (ax-1..3) and a 21-step horizon. Humans named lemmas for long proofs this library can't see.
+- DAG sizes are heuristic upper bounds. A better DAG solver could only lower DAG costs further.
+- The price of a lemma is its proof from the axioms (L(v)), not from the lemmas already named. That's the simpler choice and slightly penalizes later picks.

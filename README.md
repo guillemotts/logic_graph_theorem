@@ -26,6 +26,8 @@ Every relationship on the map is certified. A line exists because a proof was fo
 | affine | double negation | Explosion. Without weakening it doesn't. |
 | intuitionistic | `p ∨ ((p → q) ∨ ¬q)` | A logic between Gödel–Dummett and classical (3-valued Gödel logic). |
 
+**On the earlier theorem graph:** given every proof of up to 21 steps from Łukasiewicz's axioms, an algorithm picked 12 lemmas to name. The 12 that Principia and set.mm actually name save about twice as much total proof length as random lemmas of the same shape, and reach 49–60% of the algorithm's optimum. The algorithm's first pick is Principia's *Syll*. The result holds, though weaker, when each proof step is counted once instead of every time it is reused. Details: [docs/lemma_contest.md](docs/lemma_contest.md), section 20 of the notes.
+
 Whether a finding is new to the literature is a separate question: the engine certifies facts but doesn't know which are already known.
 
 ## Run it locally
