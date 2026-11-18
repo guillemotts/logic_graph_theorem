@@ -8,13 +8,6 @@ Every logic rests on assumptions that are simply taken as given: an unused assum
 
 Every relationship on the map is certified. A line exists because a proof was found, and two logics are kept apart because a small truth table (or, for modal logic, a small Kripke frame) shows one statement holding in one logic and failing in the other.
 
-## Things to try
-
-- **Drop weakening** from intuitionistic logic. You land in a relevant logic, and distribution goes too: it needs both structural rules.
-- **Add Peirce's law** `((p → q) → p) → p` to linear logic. On its face it's about implication only, yet it brings in weakening and contraction too: it bakes in both structural rules.
-- **Switch to Modal** for the modal cube (K, T, S4, S5, GL, …). Start from KD and add T, and D becomes baked in, because T proves it.
-- **Open Discoveries.** A search tried every small formula as a new assumption. It found single formulas that smuggle in several principles at once, logics that sit between the ones on the map, and some known logics it rediscovered without being told (the mingle axiom, 3-valued Gödel logic).
-
 ## A few findings
 
 | Starting logic | Add | Result |
