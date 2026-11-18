@@ -253,6 +253,9 @@ AXIOM_SETS = {
     "lukasiewicz": ["CpCqp", "CCpCqrCCpqCpr", "CCNpNqCqp"],
     # Implication only: ax-1 and ax-2 (positive implicational calculus).
     "implicational": ["CpCqp", "CCpCqrCCpqCpr"],
+    # Lukasiewicz's other well-known system (1929): hypothetical syllogism,
+    # Clavius's law and Duns Scotus's law. Shares no axiom with the one above.
+    "clavius": ["CCpqCCqrCpr", "CCNppp", "CpCNpq"],
 }
 
 

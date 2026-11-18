@@ -148,7 +148,7 @@ def main(argv: list[str] | None = None) -> None:
     ap.add_argument("out", type=Path, help="output directory, e.g. data/gen/luk21")
     ap.add_argument("--max-steps", type=int, default=21)
     ap.add_argument("--axioms", default="lukasiewicz",
-                    help="named set (lukasiewicz, implicational) or comma-separated Polish formulas")
+                    help="named set (lukasiewicz, implicational, clavius) or comma-separated Polish formulas")
     ap.add_argument("--pm", type=Path, default=Path("data/pm/pm_theorems.csv"))
     ap.add_argument("--setmm-nodes", type=Path, default=Path("data/processed/nodes.csv"))
     args = ap.parse_args(argv)

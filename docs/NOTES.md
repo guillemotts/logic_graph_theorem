@@ -766,3 +766,53 @@ Under tree size, a lemma used m times in one proof is paid for m times, which fl
 - Still one axiom system (ax-1..3) and a 21-step horizon. Humans named lemmas for long proofs this library can't see.
 - DAG sizes are heuristic upper bounds. A better DAG solver could only lower DAG costs further.
 - The price of a lemma is its proof from the axioms (L(v)), not from the lemmas already named. That's the simpler choice and slightly penalizes later picks.
+
+## 21. A second axiom system: is a lemma's value its own, or the system's?
+
+Everything in sections 12–20 used one axiom system, Metamath's ax-1..3 (here "luk"). To test whether the important lemmas are important *as statements* or only *relative to those axioms*, the same pipeline was run on Łukasiewicz's other well-known system ("clav"): hypothetical syllogism `(p → q) → ((q → r) → (p → r))`, Clavius's law `(¬p → p) → p` and Duns Scotus's law `p → (¬p → q)`. It shares no axiom with luk.
+
+```
+python -m logicgraph.generate data/gen/clav21 --max-steps 21 --axioms clavius     # 401,539 theorems, ~1 min
+python -m logicgraph.generate data/gen/clav19 --max-steps 19 --axioms clavius
+python -m logicgraph.hyperscores data/gen/clav21; python -m logicgraph.hyperscores data/gen/clav19
+python -m logicgraph.compare_systems data/gen/luk21 data/gen/clav21               # shared theorems: too few
+python -m logicgraph.transfer data/gen/luk19 data/gen/clav19 --pools data/gen/luk21 data/gen/clav21   # ~30 min, 10 cores
+```
+
+Full report: [axiom_transfer.md](axiom_transfer.md).
+
+### 1. The two systems barely meet
+
+Within 21 steps the systems prove 228,480 and 401,539 theorems, and **only 80 are common to both**. Even ax-1, `p → (q → p)`, takes more than 21 steps from clav, and `p → (q → q)` takes 17 (7 in luk). Only 5 Principia formulas are within clav's 19-step horizon, three of them its own axioms. So the planned comparison (rank the same theorems in both systems) has nothing to run on: of the non-redundant candidates, 3 are shared. `logicgraph.compare_systems` reports this and stops. It still works for systems that overlap; on two horizons of luk it gives a gain Spearman of 0.99.
+
+### 2. Transfer test
+
+Instead, each lemma is *transferred*. It is added to a system as an extra axiom (cost 1), the system's library (non-redundant theorems with L ≤ 15) is regenerated, and the saving is summed. Regenerating to the library bound is exact: a shorter proof of a library theorem never needs a step longer than the theorem. This also works for lemmas the other system can't reach at all. Lemmas from each system: its named candidates, its top 50 by naming gain, and 300 at random (701 lemmas, each scored at home and away).
+
+| lemmas from | Spearman home vs away (random lemmas) | after removing statement size | random lemmas saving nothing away | top 50 at home: median percentile away |
+|---|---|---|---|---|
+| luk (tried in clav) | 0.20 | 0.02 | 78% | 39% (= tied with the zeros) |
+| clav (tried in luk) | 0.49 | 0.40 | 75% | 97% |
+
+- **Usefulness transfers one way only.** clav's best lemmas are also among the best in luk. luk's best lemmas mostly do nothing in clav: 26 of its top 45 non-named lemmas save nothing there. Beyond "short statements help everywhere", luk's ranking carries no information about clav (partial correlation 0.02).
+- **What fails to transfer has a shape.** The luk lemmas that are useless in clav are variants of luk's own axioms. Most are variants of ax-2 (self-distribution, `(p → (q → r)) → ((p → q) → (p → r))`) or its contraction-like consequences (`((p → q) → p) → …`), and the rest are variants of ax-3 (contraposition, `(¬p → ¬q) → (q → p)`). These are the glue of luk proofs, and clav's library has no use for them. What does transfer is syllogism and weakening: *Syll* (*2.05), `p → ((q → (p → r)) → (q → r))`, and lemmas containing weakening, which clav lacks cheaply. clav's top lemmas are mostly generalized syllogisms (transitivity chains), and those help in luk too.
+- So **a lemma's value is mostly complementarity with the axioms**: it is worth what the axioms make expensive. Transitivity is expensive in luk and an axiom in clav, so clav-style lemmas help luk. Self-distribution is luk's own axiom and of no use to clav's library.
+
+### 3. The human names, away from home
+
+The 12 named luk lemmas, tried in clav, against luk's random lemmas:
+
+| saving measured in | AUC | matched AUC (same size and luk proof length) |
+|---|---|---|
+| luk (home) | 0.92 (0.85–0.97) | 1.00 |
+| clav (away) | 0.80 (0.66–0.92) | 0.42 (0.12–0.73) |
+
+Leaving out *2.06 and *2.24, which are clav axioms (saving 0 by construction), gives a matched AUC of 0.55 (0.10–1.00). Six named lemmas are in clav's top 2% (`jarr`, `ax1w`, `2a1`, *Syll* *2.05, `id`, `idd`). They are short weakening and syllogism forms, which is what their size predicts. *2.75 and *2.43 (distribution and contraction) drop to 82% and 80%. **At home, the named lemmas beat every lemma of the same shape. Away, they do about as well as same-size lemmas.** The interval is wide (10 lemmas), so this can't rule out a modest away effect.
+
+The other direction can't be tested: clav reaches almost no named theorems.
+
+### Caveats
+
+- Two systems, and libraries only up to 15 steps. A longer horizon gives clav's library more of the theorems humans care about, and might change the picture.
+- Principia's names were chosen in Principia's own system, which is neither of these. set.mm's names were chosen in luk. The home advantage could partly be set.mm's choice of system showing.
+- Savings are in steps over different libraries (2,893 vs 5,666 theorems), so only ranks are compared across systems.

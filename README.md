@@ -28,6 +28,8 @@ Every relationship on the map is certified. A line exists because a proof was fo
 
 **On the earlier theorem graph:** given every proof of up to 21 steps from Łukasiewicz's axioms, an algorithm picked 12 lemmas to name. The 12 that Principia and set.mm actually name save about twice as much total proof length as random lemmas of the same shape, and reach 49–60% of the algorithm's optimum. The algorithm's first pick is Principia's *Syll*. The result holds, though weaker, when each proof step is counted once instead of every time it is reused. Details: [docs/lemma_contest.md](docs/lemma_contest.md), section 20 of the notes.
 
+Swapping in a different axiom system (Łukasiewicz's syllogism, Clavius and Duns Scotus axioms) shows how much of that is the axioms. The two systems share only 80 of their 228k and 401k shortest-proof theorems. A lemma added to the other system mostly helps in proportion to what that system's axioms make expensive: transitivity lemmas help everywhere, while the distribution lemmas central to the first system do nothing in the second. Away from home, the human-named lemmas do about as well as random lemmas of the same size. Details: [docs/axiom_transfer.md](docs/axiom_transfer.md), section 21.
+
 Whether a finding is new to the literature is a separate question: the engine certifies facts but doesn't know which are already known.
 
 ## Run it locally
